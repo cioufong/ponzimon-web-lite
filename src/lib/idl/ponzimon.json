@@ -1,0 +1,2003 @@
+{
+  "address": "pmnSxWFQUz7nCncGznUYhaJdJFFUvcx97GZFhbiCYWi",
+  "metadata": {
+    "name": "ponzimon",
+    "version": "0.1.0",
+    "spec": "0.1.0"
+  },
+  "instructions": [
+    {
+      "name": "cancel_pending_action",
+      "discriminator": [218, 126, 76, 224, 30, 9, 86, 114],
+      "accounts": [
+        {
+          "name": "player_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [112, 108, 97, 121, 101, 114]
+              },
+              {
+                "kind": "account",
+                "path": "player_wallet"
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [103, 108, 111, 98, 97, 108, 95, 115, 116, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rewards_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [114, 101, 119, 97, 114, 100, 115, 95, 118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "player_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claim_rewards",
+      "discriminator": [4, 144, 132, 71, 116, 23, 151, 80],
+      "accounts": [
+        {
+          "name": "player_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [112, 108, 97, 121, 101, 114]
+              },
+              {
+                "kind": "account",
+                "path": "player_wallet"
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [103, 108, 111, 98, 97, 108, 95, 115, 116, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rewards_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [114, 101, 119, 97, 114, 100, 115, 95, 118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "player_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "discard_card",
+      "discriminator": [38, 132, 222, 187, 133, 227, 8, 31],
+      "accounts": [
+        {
+          "name": "player_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [112, 108, 97, 121, 101, 114]
+              },
+              {
+                "kind": "account",
+                "path": "player_wallet"
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [103, 108, 111, 98, 97, 108, 95, 115, 116, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rewards_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [114, 101, 119, 97, 114, 100, 115, 95, 118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "player_token_account",
+          "writable": true
+        },
+        {
+          "name": "fees_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "card_index",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "initialize_program",
+      "discriminator": [176, 107, 205, 168, 24, 157, 175, 103],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [103, 108, 111, 98, 97, 108, 95, 115, 116, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "fees_wallet"
+        },
+        {
+          "name": "fees_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "fees_wallet"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206, 235, 121, 172, 28, 180, 133, 237, 95,
+                  91, 55, 145, 58, 140, 245, 133, 126, 255, 0, 169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142, 13, 131, 11, 90, 19, 153, 218, 255, 16,
+                132, 4, 142, 123, 216, 219, 233, 248, 89
+              ]
+            }
+          }
+        },
+        {
+          "name": "rewards_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [114, 101, 119, 97, 114, 100, 115, 95, 118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_mint",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "start_slot",
+          "type": "u64"
+        },
+        {
+          "name": "total_supply",
+          "type": "u64"
+        },
+        {
+          "name": "initial_farm_purchase_fee_lamports",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "booster_pack_cost_microtokens",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "gamble_fee_lamports",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "staking_lockup_slots",
+          "type": "u64"
+        },
+        {
+          "name": "token_reward_rate",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "open_booster_commit",
+      "discriminator": [7, 252, 135, 223, 242, 236, 242, 93],
+      "accounts": [
+        {
+          "name": "player_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [112, 108, 97, 121, 101, 114]
+              },
+              {
+                "kind": "account",
+                "path": "player_wallet"
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [103, 108, 111, 98, 97, 108, 95, 115, 116, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rewards_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [114, 101, 119, 97, 114, 100, 115, 95, 118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "player_token_account",
+          "writable": true
+        },
+        {
+          "name": "fees_token_account",
+          "writable": true
+        },
+        {
+          "name": "referrer_token_account",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "token_mint",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "purchase_initial_farm",
+      "docs": ["NON ADMIN FUNCTIONS"],
+      "discriminator": [233, 62, 49, 138, 164, 181, 114, 69],
+      "accounts": [
+        {
+          "name": "player_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [112, 108, 97, 121, 101, 114]
+              },
+              {
+                "kind": "account",
+                "path": "player_wallet"
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [103, 108, 111, 98, 97, 108, 95, 115, 116, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "fees_wallet",
+          "writable": true
+        },
+        {
+          "name": "referrer_wallet",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "player_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "player_wallet"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206, 235, 121, 172, 28, 180, 133, 237, 95,
+                  91, 55, 145, 58, 140, 245, 133, 126, 255, 0, 169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142, 13, 131, 11, 90, 19, 153, 218, 255, 16,
+                132, 4, 142, 123, 216, 219, 233, 248, 89
+              ]
+            }
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "recycle_cards_commit",
+      "discriminator": [199, 209, 96, 199, 205, 57, 66, 239],
+      "accounts": [
+        {
+          "name": "player_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [112, 108, 97, 121, 101, 114]
+              },
+              {
+                "kind": "account",
+                "path": "player_wallet"
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [103, 108, 111, 98, 97, 108, 95, 115, 116, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rewards_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [114, 101, 119, 97, 114, 100, 115, 95, 118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "player_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "card_indices",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "recycle_cards_settle",
+      "discriminator": [43, 187, 33, 249, 184, 225, 127, 143],
+      "accounts": [
+        {
+          "name": "player_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [112, 108, 97, 121, 101, 114]
+              },
+              {
+                "kind": "account",
+                "path": "player_wallet"
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [103, 108, 111, 98, 97, 108, 95, 115, 116, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rewards_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [114, 101, 119, 97, 114, 100, 115, 95, 118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "player_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "slot_hashes"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "reset_player",
+      "docs": [
+        "────────────────────────────────────────────────────────────────────────────",
+        "ALL ADMIN FUNCTIONS ENFORCED BY AUTHORITY SIGNING IXS",
+        "────────────────────────────────────────────────────────────────────────────"
+      ],
+      "discriminator": [173, 181, 112, 108, 27, 126, 225, 123],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": ["global_state"]
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [103, 108, 111, 98, 97, 108, 95, 115, 116, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [112, 108, 97, 121, 101, 114]
+              },
+              {
+                "kind": "account",
+                "path": "player_wallet"
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "player_wallet"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "settle_open_booster",
+      "discriminator": [228, 144, 199, 56, 94, 223, 9, 226],
+      "accounts": [
+        {
+          "name": "player_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [112, 108, 97, 121, 101, 114]
+              },
+              {
+                "kind": "account",
+                "path": "player_wallet"
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [103, 108, 111, 98, 97, 108, 95, 115, 116, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rewards_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [114, 101, 119, 97, 114, 100, 115, 95, 118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "player_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "slot_hashes"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "stake_card",
+      "discriminator": [97, 111, 171, 186, 179, 198, 68, 172],
+      "accounts": [
+        {
+          "name": "player_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [112, 108, 97, 121, 101, 114]
+              },
+              {
+                "kind": "account",
+                "path": "player_wallet"
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [103, 108, 111, 98, 97, 108, 95, 115, 116, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rewards_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [114, 101, 119, 97, 114, 100, 115, 95, 118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "player_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "card_index",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "toggle_production",
+      "discriminator": [66, 176, 34, 247, 31, 189, 231, 105],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": ["global_state"]
+        },
+        {
+          "name": "global_state",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "enable",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "unstake_card",
+      "discriminator": [228, 178, 159, 183, 119, 1, 197, 222],
+      "accounts": [
+        {
+          "name": "player_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [112, 108, 97, 121, 101, 114]
+              },
+              {
+                "kind": "account",
+                "path": "player_wallet"
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [103, 108, 111, 98, 97, 108, 95, 115, 116, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rewards_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [114, 101, 119, 97, 114, 100, 115, 95, 118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "player_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "card_index",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "update_parameter",
+      "discriminator": [99, 187, 162, 136, 162, 32, 122, 2],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": ["global_state"]
+        },
+        {
+          "name": "global_state",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "parameter_index",
+          "type": "u8"
+        },
+        {
+          "name": "parameter_value",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "update_pool_manual",
+      "discriminator": [134, 168, 45, 173, 62, 196, 240, 243],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": ["global_state"]
+        },
+        {
+          "name": "global_state",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "upgrade_farm",
+      "discriminator": [110, 239, 193, 1, 165, 101, 54, 200],
+      "accounts": [
+        {
+          "name": "player_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "player",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [112, 108, 97, 121, 101, 114]
+              },
+              {
+                "kind": "account",
+                "path": "player_wallet"
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [103, 108, 111, 98, 97, 108, 95, 115, 116, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rewards_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [114, 101, 119, 97, 114, 100, 115, 95, 118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "player_token_account",
+          "writable": true
+        },
+        {
+          "name": "fees_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_mint",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "farm_type",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "GlobalState",
+      "discriminator": [163, 46, 74, 168, 216, 123, 133, 98]
+    },
+    {
+      "name": "Player",
+      "discriminator": [205, 222, 112, 7, 165, 155, 206, 218]
+    }
+  ],
+  "events": [
+    {
+      "name": "BoosterOpened",
+      "discriminator": [111, 123, 162, 178, 197, 247, 70, 113]
+    },
+    {
+      "name": "CardDiscarded",
+      "discriminator": [214, 50, 164, 150, 17, 244, 206, 217]
+    },
+    {
+      "name": "CardStaked",
+      "discriminator": [118, 132, 34, 145, 78, 51, 50, 254]
+    },
+    {
+      "name": "CardUnstaked",
+      "discriminator": [234, 238, 228, 241, 53, 235, 104, 249]
+    },
+    {
+      "name": "CardsRecycled",
+      "discriminator": [179, 68, 102, 238, 132, 138, 26, 133]
+    },
+    {
+      "name": "FarmUpgraded",
+      "discriminator": [158, 197, 41, 51, 247, 144, 229, 226]
+    },
+    {
+      "name": "InitialFarmPurchased",
+      "discriminator": [85, 214, 198, 167, 104, 110, 102, 78]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "WalletTooNew",
+      "msg": "Wallet age is less than 7 days"
+    },
+    {
+      "code": 6001,
+      "name": "PowerCapacityExceeded",
+      "msg": "Farm power capacity exceeded"
+    },
+    {
+      "code": 6002,
+      "name": "MachineCapacityExceeded",
+      "msg": "Farm card capacity exceeded"
+    },
+    {
+      "code": 6003,
+      "name": "InsufficientTokens",
+      "msg": "Insufficient tokens balance"
+    },
+    {
+      "code": 6004,
+      "name": "InsufficientLamports",
+      "msg": "Insufficient lamports"
+    },
+    {
+      "code": 6005,
+      "name": "CooldownNotExpired",
+      "msg": "Cooldown not expired"
+    },
+    {
+      "code": 6006,
+      "name": "ProductionDisabled",
+      "msg": "Production is disabled"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidMachineType",
+      "msg": "Invalid card type"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidFarmType",
+      "msg": "Invalid farm type"
+    },
+    {
+      "code": 6009,
+      "name": "Unauthorized",
+      "msg": "Unauthorized access"
+    },
+    {
+      "code": 6010,
+      "name": "InitialFarmAlreadyPurchased",
+      "msg": "Initial farm already purchased"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidReferrer",
+      "msg": "Invalid referrer"
+    },
+    {
+      "code": 6012,
+      "name": "ReferrerAccountMissing",
+      "msg": "The referrer's token account was not provided when required."
+    },
+    {
+      "code": 6013,
+      "name": "InvalidTokenMint",
+      "msg": "Invalid token mint"
+    },
+    {
+      "code": 6014,
+      "name": "NewWalletRestricted",
+      "msg": "New wallet restricted"
+    },
+    {
+      "code": 6015,
+      "name": "NoPendingReward",
+      "msg": "No pending reward"
+    },
+    {
+      "code": 6016,
+      "name": "RewardAlreadyClaimed",
+      "msg": "Reward already claimed"
+    },
+    {
+      "code": 6017,
+      "name": "RewardExpired",
+      "msg": "Reward expired"
+    },
+    {
+      "code": 6018,
+      "name": "SelfReferralNotAllowed",
+      "msg": "Self-referral is not allowed"
+    },
+    {
+      "code": 6019,
+      "name": "InvalidReferralFee",
+      "msg": "Invalid referral fee, must be between 0 and 50 (5.0%)"
+    },
+    {
+      "code": 6020,
+      "name": "InvalidBurnRate",
+      "msg": "Invalid burn rate, must be between 0 and 100"
+    },
+    {
+      "code": 6021,
+      "name": "InvalidHalvingInterval",
+      "msg": "Invalid halving interval, must be > 0"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidDustThresholdDivisor",
+      "msg": "Invalid dust threshold divisor, must be > 0"
+    },
+    {
+      "code": 6023,
+      "name": "FarmNotFull",
+      "msg": "Current farm is not at maximum machine capacity for upgrade"
+    },
+    {
+      "code": 6024,
+      "name": "RandomnessAlreadyRevealed",
+      "msg": "Randomness already revealed"
+    },
+    {
+      "code": 6025,
+      "name": "RandomnessNotResolved",
+      "msg": "Randomness not resolved"
+    },
+    {
+      "code": 6026,
+      "name": "RandomnessExpired",
+      "msg": "Randomness expired"
+    },
+    {
+      "code": 6027,
+      "name": "InvalidRandomnessAccount",
+      "msg": "Invalid randomness account"
+    },
+    {
+      "code": 6028,
+      "name": "NoPendingGamble",
+      "msg": "No pending gamble to settle"
+    },
+    {
+      "code": 6029,
+      "name": "AlreadyHasPendingGamble",
+      "msg": "Player already has a pending gamble"
+    },
+    {
+      "code": 6030,
+      "name": "CardIsStaked",
+      "msg": "This card is currently staked and cannot be discarded."
+    },
+    {
+      "code": 6031,
+      "name": "CardNotStaked",
+      "msg": "This card is not staked."
+    },
+    {
+      "code": 6032,
+      "name": "CardPendingRecycling",
+      "msg": "This card is pending recycling and cannot be used."
+    },
+    {
+      "code": 6033,
+      "name": "BoosterAlreadyPending",
+      "msg": "Player already has a pending booster pack request."
+    },
+    {
+      "code": 6034,
+      "name": "NoBoosterPending",
+      "msg": "Player does not have a pending booster pack to settle."
+    },
+    {
+      "code": 6035,
+      "name": "RecycleAlreadyPending",
+      "msg": "Player already has a pending card recycle request."
+    },
+    {
+      "code": 6036,
+      "name": "NoRecyclePending",
+      "msg": "Player does not have a pending card recycle to settle."
+    },
+    {
+      "code": 6037,
+      "name": "InvalidRecycleCardCount",
+      "msg": "Must provide between 1 and 20 cards for recycling."
+    },
+    {
+      "code": 6038,
+      "name": "DuplicateRecycleCardIndices",
+      "msg": "Duplicate card indices not allowed in recycle."
+    },
+    {
+      "code": 6039,
+      "name": "RandomnessDelayNotMet",
+      "msg": "Minimum delay not met for randomness commitment"
+    },
+    {
+      "code": 6040,
+      "name": "InvalidTokenAccountOwner",
+      "msg": "Invalid token account owner"
+    },
+    {
+      "code": 6041,
+      "name": "ArithmeticOverflow",
+      "msg": "Arithmetic overflow in berry calculation"
+    },
+    {
+      "code": 6042,
+      "name": "CardIndexOutOfBounds",
+      "msg": "Card index out of bounds"
+    },
+    {
+      "code": 6043,
+      "name": "InvalidFarmTypeForOperation",
+      "msg": "Invalid farm type for operation"
+    },
+    {
+      "code": 6044,
+      "name": "InvalidMintAuthority",
+      "msg": "Program does not have mint authority over the token"
+    },
+    {
+      "code": 6045,
+      "name": "ZeroAmount",
+      "msg": "Amount must be greater than zero."
+    },
+    {
+      "code": 6046,
+      "name": "InsufficientStake",
+      "msg": "Insufficient staked amount."
+    },
+    {
+      "code": 6047,
+      "name": "StakeLocked",
+      "msg": "Staked tokens are locked."
+    },
+    {
+      "code": 6048,
+      "name": "InvalidParameterIndex",
+      "msg": "Invalid Parameter Index"
+    },
+    {
+      "code": 6049,
+      "name": "NoPendingAction",
+      "msg": "No pending action to cancel."
+    },
+    {
+      "code": 6050,
+      "name": "CancelTimeoutNotExpired",
+      "msg": "Cannot cancel yet. A timeout period is required."
+    },
+    {
+      "code": 6051,
+      "name": "InvalidRandomnessAccountOwner",
+      "msg": "Invalid randomness account owner"
+    },
+    {
+      "code": 6052,
+      "name": "InvalidSlotHashes",
+      "msg": "Invalid SlotHashes sysvar"
+    },
+    {
+      "code": 6053,
+      "name": "SlotNotFound",
+      "msg": "Slot not found"
+    },
+    {
+      "code": 6054,
+      "name": "InvalidTokenMintDecimals",
+      "msg": "Invalid token mint decimals"
+    },
+    {
+      "code": 6055,
+      "name": "InvalidDecimals",
+      "msg": "Invalid decimals"
+    }
+  ],
+  "types": [
+    {
+      "name": "BoosterOpened",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "card_types",
+            "type": {
+              "array": ["u8", 5]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Card",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u16"
+          },
+          {
+            "name": "rarity",
+            "type": "u8"
+          },
+          {
+            "name": "hashpower",
+            "type": "u16"
+          },
+          {
+            "name": "berry_consumption",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CardDiscarded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "card_index",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CardStaked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "card_index",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CardUnstaked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "card_index",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CardsRecycled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "successful_upgrades",
+            "type": "u8"
+          },
+          {
+            "name": "total_recycled",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Farm",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "farm_type",
+            "type": "u8"
+          },
+          {
+            "name": "total_cards",
+            "type": "u8"
+          },
+          {
+            "name": "berry_capacity",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FarmUpgraded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "player",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_farm_type",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GlobalState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "fees_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_supply",
+            "type": "u64"
+          },
+          {
+            "name": "burned_tokens",
+            "type": "u64"
+          },
+          {
+            "name": "cumulative_rewards",
+            "type": "u64"
+          },
+          {
+            "name": "start_slot",
+            "type": "u64"
+          },
+          {
+            "name": "reward_rate",
+            "type": "u64"
+          },
+          {
+            "name": "acc_tokens_per_hashpower",
+            "type": "u128"
+          },
+          {
+            "name": "last_reward_slot",
+            "type": "u64"
+          },
+          {
+            "name": "burn_rate",
+            "type": "u8"
+          },
+          {
+            "name": "referral_fee",
+            "type": "u8"
+          },
+          {
+            "name": "production_enabled",
+            "type": "bool"
+          },
+          {
+            "name": "dust_threshold_divisor",
+            "type": "u64"
+          },
+          {
+            "name": "initial_farm_purchase_fee_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "booster_pack_cost_microtokens",
+            "type": "u64"
+          },
+          {
+            "name": "gamble_fee_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "total_berries",
+            "type": "u64"
+          },
+          {
+            "name": "total_hashpower",
+            "type": "u64"
+          },
+          {
+            "name": "total_global_gambles",
+            "type": "u64"
+          },
+          {
+            "name": "total_global_gamble_wins",
+            "type": "u64"
+          },
+          {
+            "name": "total_booster_packs_opened",
+            "type": "u64"
+          },
+          {
+            "name": "total_card_recycling_attempts",
+            "type": "u64"
+          },
+          {
+            "name": "total_successful_card_recycling",
+            "type": "u64"
+          },
+          {
+            "name": "total_staked_tokens",
+            "type": "u64"
+          },
+          {
+            "name": "staking_lockup_slots",
+            "type": "u64"
+          },
+          {
+            "name": "acc_sol_rewards_per_token",
+            "type": "u128"
+          },
+          {
+            "name": "acc_token_rewards_per_token",
+            "type": "u128"
+          },
+          {
+            "name": "last_staking_reward_slot",
+            "type": "u64"
+          },
+          {
+            "name": "token_reward_rate",
+            "type": "u64"
+          },
+          {
+            "name": "total_sol_deposited",
+            "type": "u64"
+          },
+          {
+            "name": "rewards_vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": ["u8", 32]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitialFarmPurchased",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "player_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "player_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "referrer",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "farm_type",
+            "type": "u8"
+          },
+          {
+            "name": "initial_cards",
+            "type": "u8"
+          },
+          {
+            "name": "initial_hashpower",
+            "type": "u64"
+          },
+          {
+            "name": "slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PendingRandomAction",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "None"
+          },
+          {
+            "name": "Gamble",
+            "fields": [
+              {
+                "name": "amount",
+                "type": "u64"
+              }
+            ]
+          },
+          {
+            "name": "Booster"
+          },
+          {
+            "name": "Recycle",
+            "fields": [
+              {
+                "name": "card_indices",
+                "type": {
+                  "array": ["u8", 128]
+                }
+              },
+              {
+                "name": "card_count",
+                "type": "u8"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Player",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "farm",
+            "type": {
+              "defined": {
+                "name": "Farm"
+              }
+            }
+          },
+          {
+            "name": "cards",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "Card"
+                  }
+                },
+                128
+              ]
+            }
+          },
+          {
+            "name": "card_count",
+            "type": "u8"
+          },
+          {
+            "name": "staked_cards_bitset",
+            "type": "u128"
+          },
+          {
+            "name": "berries",
+            "type": "u64"
+          },
+          {
+            "name": "total_hashpower",
+            "type": "u64"
+          },
+          {
+            "name": "referrer",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "last_acc_tokens_per_hashpower",
+            "type": "u128"
+          },
+          {
+            "name": "last_claim_slot",
+            "type": "u64"
+          },
+          {
+            "name": "last_upgrade_slot",
+            "type": "u64"
+          },
+          {
+            "name": "total_rewards",
+            "type": "u64"
+          },
+          {
+            "name": "total_gambles",
+            "type": "u64"
+          },
+          {
+            "name": "total_gamble_wins",
+            "type": "u64"
+          },
+          {
+            "name": "pending_action",
+            "type": {
+              "defined": {
+                "name": "PendingRandomAction"
+              }
+            }
+          },
+          {
+            "name": "commit_slot",
+            "type": "u64"
+          },
+          {
+            "name": "total_earnings_for_referrer",
+            "type": "u64"
+          },
+          {
+            "name": "total_booster_packs_opened",
+            "type": "u64"
+          },
+          {
+            "name": "total_cards_recycled",
+            "type": "u64"
+          },
+          {
+            "name": "successful_card_recycling",
+            "type": "u64"
+          },
+          {
+            "name": "total_sol_spent",
+            "type": "u64"
+          },
+          {
+            "name": "total_tokens_spent",
+            "type": "u64"
+          },
+          {
+            "name": "staked_tokens",
+            "type": "u64"
+          },
+          {
+            "name": "last_stake_slot",
+            "type": "u64"
+          },
+          {
+            "name": "last_acc_sol_rewards_per_token",
+            "type": "u128"
+          },
+          {
+            "name": "last_acc_token_rewards_per_token",
+            "type": "u128"
+          },
+          {
+            "name": "claimed_token_rewards",
+            "type": "u64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": ["u8", 64]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
