@@ -1,6 +1,7 @@
 'use client';
 
 import React, { PropsWithChildren } from 'react';
+import { useI18n } from '../lib/useI18n';
 
 interface ModalProps {
   open: boolean;
@@ -16,6 +17,7 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
   children, 
   maxWidth = "max-w-md" 
 }) => {
+  const { t } = useI18n();
   if (!open) return null;
 
   return (
@@ -24,6 +26,7 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-400 hover:text-white z-10 bg-gray-800 rounded-full w-6 h-6 flex items-center justify-center"
+          title={t('close')}
         >
           ✕
         </button>

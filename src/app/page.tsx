@@ -19,8 +19,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { getAssociatedTokenAddress } from '@solana/spl-token';
 import type { GlobalState } from '@/lib/types';
 import { PROGRAM_ID, TOKEN_MINT } from '@/store';
+import { I18nProvider, useI18n, Locale } from '../lib/I18nProvider';
 
-export default function Home() {
+function Home() {
   const { accounts, config, addAccount, refreshInterval } = useAppStore();
   const [rpcOpen, setRpcOpen] = useState(false);
   const [addingWallet, setAddingWallet] = useState(false);
@@ -31,6 +32,8 @@ export default function Home() {
   const [showAddWalletCard, setShowAddWalletCard] = useState(false);
   const [logsModalOpen, setLogsModalOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { locale, setLocale, t } = useI18n();
+  const [refreshing, setRefreshing] = useState(false);
 
   // 顯示抽卡價格
   const [boosterCost, setBoosterCost] = useState<number | null>(null);
@@ -130,6 +133,7 @@ export default function Home() {
   // 全域自動刷新
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const handleGlobalRefresh = useCallback(async () => {
+    setRefreshing(true);
     // 获取限流配置
     const state = useAppStore.getState();
     const rateLimit = state.config.rateLimit;
@@ -277,12 +281,14 @@ export default function Home() {
         }
       }
       
-      toast('所有帳號資料已刷新', 'success');
+      toast(t('all_accounts_refreshed'), 'success');
+      setRefreshing(false);
     } catch (error) {
       console.error('全部刷新失敗:', error);
-      toast('全部刷新失敗', 'error');
+      toast(t('all_accounts_refresh_failed'), 'error');
+      setRefreshing(false);
     }
-  }, [accounts, config.rpcEndpoint, queryClient, toast]);
+  }, [accounts, config.rpcEndpoint, queryClient, toast, t]);
 
   // 初始載入時執行一次批量查詢
   useEffect(() => {
@@ -312,7 +318,7 @@ export default function Home() {
     const name = keypair.publicKey.toBase58();
     const secret = bs58.encode(keypair.secretKey);
     addAccount({ name, secret });
-    toast(`新錢包已新增：${name}`, 'success');
+    toast(t('new_wallet_added').replace('{name}', name), 'success');
     setWalletModalOpen(false);
   };
 
@@ -322,62 +328,78 @@ export default function Home() {
         <header className="mb-8 flex flex-col items-start justify-between">
           <div className="w-full flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <h1 className="text-4xl font-bold">Ponzimon Dashboard</h1>
-                <RpcStatus />
+              <h1 className="text-4xl font-bold">{t('title')}</h1>
+              <RpcStatus />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
+              {/* 語言切換下拉選單 */}
+              <select
+                value={locale}
+                onChange={e => setLocale(e.target.value as Locale)}
+                className="bg-gray-700 text-white rounded px-2 py-1"
+                title={t('switch_language')}
+              >
+                <option value="zh-TW">繁中</option>
+                <option value="zh-CN">简中</option>
+                <option value="en">English</option>
+              </select>
               <button
-                    onClick={handleGlobalRefresh}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md"
-                    disabled={false}
-                    title="全部帳號資料重整/刷新"
-                  >
-                    🔄 全部刷新
-                  </button>
-                  <button
-                    onClick={() => setLogsModalOpen(true)}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md"
-                    disabled={false}
-                    title="查看所有錢包日誌"
-                  >
-                    📋 日誌管理
-                  </button>
+                onClick={handleGlobalRefresh}
+                className={`bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md flex items-center justify-center ${refreshing ? 'opacity-60 cursor-not-allowed' : ''}`}
+                disabled={refreshing}
+                title={t('refresh')}
+              >
+                {refreshing ? (
+                  <span className="animate-spin mr-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+                ) : (
+                  '🔄'
+                )}
+                {t('refresh')}
+              </button>
+              <button
+                onClick={() => setLogsModalOpen(true)}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md"
+                disabled={false}
+                title={t('logs')}
+              >
+                📋 {t('logs')}
+              </button>
               <button
                 onClick={() => setRpcOpen(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
-                    disabled={false}
+                disabled={false}
               >
                 RPC
               </button>
-              </div>
+            </div>
           </div>
           <div className="mt-3 mb-2 px-4 py-2 bg-amber-100/10 border border-amber-300/30 rounded text-amber-200 text-sm max-w-2xl">
-            <span className="font-bold">安全性說明：</span>私鑰僅保存在本地瀏覽器，不會上傳伺服器或第三方。請妥善備份，勿洩漏給他人。
+            <span className="font-bold">{t('security_note')}</span>{t('security_detail')}
             <div className="mt-2 flex gap-4 items-center justify-end w-full">
               <a
                 href="https://github.com/cioufong/ponzimon-web-lite"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1 text-blue-300 hover:text-blue-400 underline"
-                title="前往 GitHub"
+                title={t('github')}
               >
                 <svg width="18" height="18" fill="currentColor" className="inline-block" viewBox="0 0 24 24">
                   <path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.78 2.73 1.27 3.4.97.11-.75.41-1.27.74-1.56-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 2.9-.39c.98 0 1.97.13 2.9.39 2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.41-5.27 5.7.42.36.79 1.09.79 2.2 0 1.59-.01 2.87-.01 3.26 0 .31.21.68.8.56C20.71 21.39 24 17.08 24 12c0-6.27-5.23-11.5-12-11.5z"/>
                 </svg>
-                GitHub
+                {t('github')}
               </a>
               <a
                 href="https://x.com/0xTisane"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1 text-neutral-300 hover:text-black underline"
-                title="前往 X"
+                title={t('x')}
               >
                 {/* X (Twitter) 標誌 */}
                 <svg width="18" height="18" fill="currentColor" className="inline-block" viewBox="0 0 24 24">
                   <path d="M17.53 3H21.5l-7.06 8.06L22.5 21h-7.5l-5.2-6.18L3.5 21H-.5l7.67-8.76L1.5 3h7.5l4.7 5.58L17.53 3zm-2.13 15h2.13l-5.98-7.1-1.5 1.72L15.4 18zm-8.93 0h2.13l2.1-2.4-2.1-2.42-2.13 2.42 2.1 2.4zm1.5-13H5.87l5.98 7.1 1.5-1.72L8.1 5zm8.93 0h-2.13l-2.1 2.4 2.1 2.42 2.13-2.42-2.1-2.4z"/>
                 </svg>
-                X
+                {t('x')}
               </a>
             </div>
           </div>
@@ -389,21 +411,21 @@ export default function Home() {
                 onClick={() => setWalletModalOpen(true)}
                 className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-md"
                 disabled={false}
-                title="新增錢包（自動產生或手動匯入）"
+                title={t('add_wallet')}
               >
-                ➕ 新增錢包
+                ➕ {t('add_wallet')}
               </button>
             </div>
             {/* 抽卡價格顯示區塊 */}
             {TOKEN_MINT && (
               <>
                 <div className="flex items-center gap-2 bg-gray-700 border border-green-500 p-2 rounded my-1">
-                  <span className="text-xs text-green-300">初始化農場價格：</span>
-                  <span className="font-mono text-base text-green-200">{farmInitCost !== null ? `${farmInitCost} SOL` : '讀取中...'}</span>
+                  <span className="text-xs text-green-300">{t('farm_init_cost')}：</span>
+                  <span className="font-mono text-base text-green-200">{farmInitCost !== null ? `${farmInitCost} SOL` : t('loading')}</span>
                 </div>
                 <div className="flex items-center gap-2 bg-gray-700 border border-yellow-500 p-2 rounded my-1">
-                  <span className="text-xs text-yellow-300">抽卡價格：</span>
-                  <span className="font-mono text-base text-yellow-200">{boosterCost !== null ? `${boosterCost} POKE` : '讀取中...'}</span>
+                  <span className="text-xs text-yellow-300">{t('booster_cost')}：</span>
+                  <span className="font-mono text-base text-yellow-200">{boosterCost !== null ? `${boosterCost} POKE` : t('loading')}</span>
                   {claimTimeRemaining && (
                     <span className="text-xs text-yellow-400 font-medium animate-pulse ml-auto">
                       {claimTimeRemaining}
@@ -441,37 +463,38 @@ export default function Home() {
         </Modal>
         
         {/* 全域日誌管理 Modal */}
-        <Modal open={logsModalOpen} onClose={() => setLogsModalOpen(false)} title="全域日誌管理" maxWidth="max-w-6xl">
+        <Modal open={logsModalOpen} onClose={() => setLogsModalOpen(false)} title={t('global_log_manage')} maxWidth="max-w-6xl">
           <div className="flex flex-col h-96 max-h-[80vh] w-full max-w-4xl">
             <div className="flex justify-between items-center mb-4 p-2 bg-gray-700 rounded">
               <span className="text-sm text-gray-300">
-                共 {Object.keys(logsMap).length} 個錢包，{Object.values(logsMap).reduce((total, logs) => total + (Array.isArray(logs) ? logs.length : 0), 0)} 條日誌
+                {t('log_wallet_count').replace('{count}', String(Object.keys(logsMap).length))}
+                {t('log_count').replace('{count}', String(Object.values(logsMap).reduce((total, logs) => total + (Array.isArray(logs) ? logs.length : 0), 0)))}
               </span>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
                     clearAllLogs();
-                    toast('所有日誌已清除', 'success');
+                    toast(t('all_logs_cleared'), 'success');
                   }}
                   className="px-3 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded"
                 >
-                  清除所有日誌
+                  {t('clear_all_logs')}
                 </button>
                 <button
                   onClick={() => {
                     const allLogsText = Object.entries(logsMap)
                       .map(([pubkey, logs]) => {
                         if (!Array.isArray(logs)) return '';
-                        return `${pubkey}:\n${logs.map(l => l.text).join('\n')}`;
+                        return `${pubkey}:\n${logs.map(l => l.url ? `${l.text} ${l.url}` : l.text).join('\n')}`;
                       })
                       .filter(text => text)
                       .join('\n\n');
                     navigator.clipboard.writeText(allLogsText);
-                    toast('所有日誌已複製到剪貼簿', 'success');
+                    toast(t('all_logs_copied'), 'success');
                   }}
                   className="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded"
                 >
-                  複製所有日誌
+                  {t('copy_all_logs')}
                 </button>
               </div>
             </div>
@@ -479,7 +502,7 @@ export default function Home() {
             {/* 日誌列表 */}
             <div className="flex-1 overflow-auto">
               {Object.keys(logsMap).length === 0 ? (
-                <div className="text-gray-500 text-center py-8">暫無日誌</div>
+                <div className="text-gray-500 text-center py-8">{t('no_logs')}</div>
               ) : (
                 Object.entries(logsMap).map(([pubkey, logs]) => (
                   <div key={pubkey} className="mb-4 p-3 bg-gray-800 rounded border border-gray-700">
@@ -490,15 +513,15 @@ export default function Home() {
                       <button
                         onClick={() => {
                           if (Array.isArray(logs)) {
-                            const logText = logs.map(l => l.text).join('\n');
+                            const logText = logs.map(l => l.url ? `${l.text} ${l.url}` : l.text).join('\n');
                             navigator.clipboard.writeText(logText);
-                            toast('日誌已複製到剪貼簿', 'success');
+                            toast(t('logs_copied'), 'success');
                           }
                         }}
                         className="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded"
                         disabled={!Array.isArray(logs)}
                       >
-                        複製
+                        {t('copy_logs')}
                       </button>
                     </div>
                     <div className="text-xs max-h-32 overflow-auto space-y-1 font-mono">
@@ -510,11 +533,11 @@ export default function Home() {
                           )}
                         </div>
                       )) : (
-                        <div className="text-gray-500 text-center py-1">日誌資料格式錯誤</div>
+                        <div className="text-gray-500 text-center py-1">{t('invalid_log_format')}</div>
                       )}
                       {Array.isArray(logs) && logs.length > 5 && (
                         <div className="text-gray-500 text-center py-1">
-                          ... 還有 {logs.length - 5} 條日誌
+                          {t('more_logs').replace('{count}', String(logs.length - 5))}
                         </div>
                       )}
                     </div>
@@ -525,20 +548,20 @@ export default function Home() {
           </div>
         </Modal>
         
-        <Modal open={walletModalOpen} onClose={() => { setWalletModalOpen(false); setShowAddWalletCard(false); }} title="新增錢包">
+        <Modal open={walletModalOpen} onClose={() => { setWalletModalOpen(false); setShowAddWalletCard(false); }} title={t('add_wallet')}>
           {!showAddWalletCard ? (
             <div className="flex flex-col gap-4 p-4">
               <button
                 onClick={handleAddNewWallet}
                 className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded"
               >
-                ➕ 自動產生新錢包
+                ➕ {t('auto_generate')}
               </button>
               <button
                 onClick={() => setShowAddWalletCard(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded"
               >
-                🔑 手動匯入私鑰
+                🔑 {t('manual_import')}
               </button>
             </div>
           ) : (
@@ -550,5 +573,13 @@ export default function Home() {
         </Modal>
       </div>
     </main>
+  );
+}
+
+export default function HomePageWrapper() {
+  return (
+    <I18nProvider>
+      <Home />
+    </I18nProvider>
   );
 }

@@ -24,6 +24,7 @@ import { FaGift } from 'react-icons/fa';
 import { FaCheck } from 'react-icons/fa';
 import { getPonzimonFriendlyError } from '@/lib/utils/errors';
 import { PROGRAM_ID } from '@/store';
+import { useI18n } from '../lib/useI18n';
 
 interface Props {
   account: Account;
@@ -52,6 +53,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
   const logs = logsMap[keypair.publicKey.toBase58()] ?? [];
   const [logOpen,setLogOpen]=useState(false);
   const { config } = useAppStore();
+  const { t } = useI18n();
   // 合併查詢：SOL、Poke、玩家資料，一次 batch RPC
   const pubkeyStr = keypair.publicKey.toBase58();
   const tokenMintKey = tokenMint ? tokenMint : 'none';
@@ -162,15 +164,15 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     try {
       const sig = await client.purchaseInitialFarm(keypair, new PublicKey(tokenMint), referrerWallet);
       const url=`https://solscan.io/tx/${sig}`;
-      toast(`Purchase success: ${sig.slice(0,8)}...`, 'success');
-      addLog(keypair.publicKey.toBase58(), `Purchase success ${sig}`, url);
+      toast(t('purchase_success').replace('{tx}', sig.slice(0,8)), 'success');
+      addLog(keypair.publicKey.toBase58(), t('purchase_success').replace('{tx}', sig.slice(0,8)), url);
       // 等待1秒再刷新
       await new Promise(res => setTimeout(res, 1000));
       refreshAccountQueries();
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err);
-      toast(`Purchase failed: ${errorMessage}`,'error');
-      addLog(keypair.publicKey.toBase58(),`Purchase failed ${errorMessage}`);
+      toast(t('purchase_failed').replace('{msg}', errorMessage), 'error');
+      addLog(keypair.publicKey.toBase58(), t('purchase_failed').replace('{msg}', errorMessage));
     } finally {
       setPurchaseLoading(false);
     }
@@ -204,28 +206,28 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       }
 
       const url=`https://solscan.io/tx/${sig}`;
-      toast(`Claimed ${claimedAmount} $Poke (tx: ${sig.slice(0,8)}...)`, 'success');
-      addLog(keypair.publicKey.toBase58(), `Claimed ${claimedAmount} $Poke tx:${sig}`, url);
+      toast(t('claimed').replace('{amount}', String(claimedAmount.toFixed(4))).replace('{tx}', String(sig.slice(0,8))), 'success');
+      addLog(keypair.publicKey.toBase58(), t('claimed').replace('{amount}', String(claimedAmount.toFixed(4))).replace('{tx}', String(sig.slice(0,8))), url);
       
       // 立即重新查詢該帳號的資料
       refreshAllQueries();
     } catch(err: unknown){
       const errorMessage = getPonzimonFriendlyError(err, err instanceof Error ? err.message : String(err));
-      toast(`Claim failed: ${errorMessage}`,'error');
-      addLog(keypair.publicKey.toBase58(),`Claim failed ${errorMessage}`);
+      toast(t('claim_failed').replace('{msg}', errorMessage), 'error');
+      addLog(keypair.publicKey.toBase58(), t('claim_failed').replace('{msg}', errorMessage));
     } finally {
       setClaimLoading(false);
     }
   };
 
   const rarityText = [
-    '普通',      // 0 Common
-    '不常見',    // 1 Uncommon
-    '稀有',      // 2 Rare
-    '雙倍稀有',  // 3 Double Rare
-    '非常稀有',  // 4 Very Rare
-    '超級稀有',  // 5 Super Rare
-    '終極稀有',  // 6 Mega Rare
+    t('rarity_common'),
+    t('rarity_uncommon'),
+    t('rarity_rare'),
+    t('rarity_double_rare'),
+    t('rarity_very_rare'),
+    t('rarity_super_rare'),
+    t('rarity_mega_rare'),
   ];
   const rarityIcon = [
     null, // 0 普通
@@ -313,8 +315,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
         const settleSig = await client.settleOpenBooster(keypair, new PublicKey(tokenMint));
         console.log('結算成功，簽名:', settleSig);
         const settleUrl = `https://solscan.io/tx/${settleSig}`;
-        toast(`結算待處理請求成功 (tx: ${settleSig.slice(0,8)}...)`, 'success');
-        addLog(keypair.publicKey.toBase58(), `結算待處理請求成功 ${settleSig}`, settleUrl);
+        toast(t('booster_settlement_success').replace('{tx}', settleSig.slice(0,8)), 'success');
+        addLog(keypair.publicKey.toBase58(), t('booster_settlement_success').replace('{tx}', settleSig.slice(0,8)), settleUrl);
         // 等待更長時間讓狀態更新
         await new Promise(res => setTimeout(res, 3000));
         // 強制刷新資料
@@ -381,21 +383,21 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       const sig1 = await client.openBoosterCommit(keypair, new PublicKey(tokenMint), feesTokenAta, referrerTokenAta);
       console.log('Commit 成功，簽名:', sig1);
       const commitUrl = `https://solscan.io/tx/${sig1}`;
-      toast(`抽卡請求已送出 (tx: ${sig1.slice(0,8)}...)`, 'success');
-      addLog(keypair.publicKey.toBase58(), `抽卡請求已送出 ${sig1}`, commitUrl);
+      toast(t('booster_commit_success').replace('{tx}', sig1.slice(0,8)), 'success');
+      addLog(keypair.publicKey.toBase58(), t('booster_commit_success').replace('{tx}', sig1.slice(0,8)), commitUrl);
       // 等待 2 秒再 settle
       await new Promise(res => setTimeout(res, 3000));
       const sig2 = await client.settleOpenBooster(keypair, new PublicKey(tokenMint));
       console.log('Settle 成功，簽名:', sig2);
       const settleUrl = `https://solscan.io/tx/${sig2}`;
-      toast(`抽卡結算成功 (tx: ${sig2.slice(0,8)}...)`, 'success');
-      addLog(keypair.publicKey.toBase58(), `抽卡結算成功 ${sig2}`, settleUrl);
+      toast(t('booster_settlement_success').replace('{tx}', sig2.slice(0,8)), 'success');
+      addLog(keypair.publicKey.toBase58(), t('booster_settlement_success').replace('{tx}', sig2.slice(0,8)), settleUrl);
       await new Promise(res => setTimeout(res, 1000));
       refreshAccountQueries();
     } catch (err: unknown) {
       const errorMessage = getPonzimonFriendlyError(err, err instanceof Error ? err.message : String(err));
-      toast(`抽卡失敗: ${errorMessage}`, 'error');
-      addLog(keypair.publicKey.toBase58(), `抽卡失敗: ${errorMessage}`);
+      toast(t('booster_failure').replace('{msg}', errorMessage), 'error');
+      addLog(keypair.publicKey.toBase58(), t('booster_failure').replace('{msg}', errorMessage));
 
       // --- 自動偵測「已有待處理的抽卡/回收請求」錯誤，自動重置 pending action 並重試一次 ---
       const shouldResetPending =
@@ -417,8 +419,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
           return;
         } catch (resetErr: unknown) {
           const resetMsg = getPonzimonFriendlyError(resetErr, resetErr instanceof Error ? resetErr.message : String(resetErr));
-          toast(`自動重置 pending action 失敗: ${resetMsg}`, 'error');
-          addLog(keypair.publicKey.toBase58(), `自動重置 pending action 失敗: ${resetMsg}`);
+          toast(t('auto_reset_pending_action_failed').replace('{msg}', resetMsg), 'error');
+          addLog(keypair.publicKey.toBase58(), t('auto_reset_pending_action_failed').replace('{msg}', resetMsg));
         }
       }
     } finally {
@@ -448,8 +450,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
           } catch (autoSettleErr: unknown) {
             console.log('自動結算回收失敗:', autoSettleErr);
             const errorMessage = getPonzimonFriendlyError(autoSettleErr, autoSettleErr instanceof Error ? autoSettleErr.message : String(autoSettleErr));
-            toast(`自動結算回收失敗: ${errorMessage}`, 'error');
-            addLog(keypair.publicKey.toBase58(), `自動結算回收失敗: ${errorMessage}`);
+            toast(t('recycling_failure').replace('{msg}', errorMessage), 'error');
+            addLog(keypair.publicKey.toBase58(), t('recycling_failure').replace('{msg}', errorMessage));
             setRecycleLoading(false);
             return;
           }
@@ -463,8 +465,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
           } catch (autoSettleErr: unknown) {
             console.log('自動結算抽卡失敗:', autoSettleErr);
             const errorMessage = getPonzimonFriendlyError(autoSettleErr, autoSettleErr instanceof Error ? autoSettleErr.message : String(autoSettleErr));
-            toast(`自動結算抽卡失敗: ${errorMessage}`, 'error');
-            addLog(keypair.publicKey.toBase58(), `自動結算抽卡失敗: ${errorMessage}`);
+            toast(t('booster_failure').replace('{msg}', errorMessage), 'error');
+            addLog(keypair.publicKey.toBase58(), t('booster_failure').replace('{msg}', errorMessage));
             setRecycleLoading(false);
             return;
           }
@@ -500,8 +502,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       const settleSig = await client.recycleCardsSettle(keypair, new PublicKey(tokenMint));
       console.log('回收結算成功:', settleSig);
       
-      toast('卡片回收成功!', 'success');
-      addLog(keypair.publicKey.toBase58(), `卡片回收成功: ${selectedCardsForRecycle.join(', ')}`);
+      toast(t('recycling_success').replace('{count}', String(selectedCardsForRecycle.length)), 'success');
+      addLog(keypair.publicKey.toBase58(), t('recycling_success').replace('{count}', String(selectedCardsForRecycle.length)));
       
       // 清空選擇的卡片
       setSelectedCardsForRecycle([]);
@@ -513,8 +515,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     } catch (err: unknown) {
       const errorMessage = getPonzimonFriendlyError(err, err instanceof Error ? err.message : String(err));
       console.log('卡片回收失敗:', errorMessage);
-      toast(`卡片回收失敗: ${errorMessage}`, 'error');
-      addLog(keypair.publicKey.toBase58(), `卡片回收失敗: ${errorMessage}`);
+      toast(t('recycling_failure').replace('{msg}', errorMessage), 'error');
+      addLog(keypair.publicKey.toBase58(), t('recycling_failure').replace('{msg}', errorMessage));
 
       // --- 自動偵測「已有待處理的抽卡/回收請求」錯誤，自動重置 pending action 並重試一次 ---
       const shouldResetPending =
@@ -536,8 +538,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
           return;
         } catch (resetErr: unknown) {
           const resetMsg = getPonzimonFriendlyError(resetErr, resetErr instanceof Error ? resetErr.message : String(resetErr));
-          toast(`自動重置 pending action 失敗: ${resetMsg}`, 'error');
-          addLog(keypair.publicKey.toBase58(), `自動重置 pending action 失敗: ${resetMsg}`);
+          toast(t('auto_reset_pending_action_failed').replace('{msg}', resetMsg), 'error');
+          addLog(keypair.publicKey.toBase58(), t('auto_reset_pending_action_failed').replace('{msg}', resetMsg));
         }
       }
     } finally {
@@ -581,15 +583,15 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       const sig = await client.transferSOL(keypair, new PublicKey(transferTarget.trim()), amount);
       await connection.confirmTransaction(sig, 'confirmed');
       const url = `https://solscan.io/tx/${sig}`;
-      toast(`SOL 轉帳成功 (tx: ${sig.slice(0,8)}...)`, 'success');
-      addLog(keypair.publicKey.toBase58(), `SOL 轉帳成功 ${sig}`, url);
+      toast(t('sol_transfer_success').replace('{tx}', sig.slice(0,8)), 'success');
+      addLog(keypair.publicKey.toBase58(), t('sol_transfer_success').replace('{tx}', sig.slice(0,8)), url);
       setTransferTarget('');
       setTransferAmount('');
       refreshAccountQueries();
     } catch (err: unknown) {
       const errorMessage = getPonzimonFriendlyError(err, err instanceof Error ? err.message : String(err));
-      toast(`SOL 轉帳失敗: ${errorMessage}`, 'error');
-      addLog(keypair.publicKey.toBase58(), `SOL 轉帳失敗: ${errorMessage}`);
+      toast(t('sol_transfer_failed').replace('{msg}', errorMessage), 'error');
+      addLog(keypair.publicKey.toBase58(), t('sol_transfer_failed').replace('{msg}', errorMessage));
     } finally {
       setTransferLoading(false);
     }
@@ -605,15 +607,15 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       const sig = await client.transferPoke(keypair, new PublicKey(transferTarget.trim()), new PublicKey(tokenMint), amount);
       await connection.confirmTransaction(sig, 'confirmed');
       const url = `https://solscan.io/tx/${sig}`;
-      toast(`Poke 轉帳成功 (tx: ${sig.slice(0,8)}...)`, 'success');
-      addLog(keypair.publicKey.toBase58(), `Poke 轉帳成功 ${sig}`, url);
+      toast(t('poke_transfer_success').replace('{tx}', sig.slice(0,8)), 'success');
+      addLog(keypair.publicKey.toBase58(), t('poke_transfer_success').replace('{tx}', sig.slice(0,8)), url);
       setTransferTarget('');
       setTransferAmount('');
       refreshAccountQueries();
     } catch (err: unknown) {
       const errorMessage = getPonzimonFriendlyError(err, err instanceof Error ? err.message : String(err));
-      toast(`Poke 轉帳失敗: ${errorMessage}`, 'error');
-      addLog(keypair.publicKey.toBase58(), `Poke 轉帳失敗: ${errorMessage}`);
+      toast(t('poke_transfer_failed').replace('{msg}', errorMessage), 'error');
+      addLog(keypair.publicKey.toBase58(), t('poke_transfer_failed').replace('{msg}', errorMessage));
     } finally {
       setTransferLoading(false);
     }
@@ -657,8 +659,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       }
       
       const claimUrl = `https://solscan.io/tx/${claimSig}`;
-      toast(`獎勵領取成功: ${claimedAmount} $Poke (tx: ${claimSig.slice(0,8)}...)`, 'success');
-      addLog(keypair.publicKey.toBase58(), `批量操作 - 獎勵領取成功: ${claimedAmount} $Poke ${claimSig}`, claimUrl);
+      toast(t('claimed').replace('{amount}', String(claimedAmount.toFixed(4))).replace('{tx}', String(claimSig.slice(0,8))), 'success');
+      addLog(keypair.publicKey.toBase58(), t('claimed').replace('{amount}', String(claimedAmount.toFixed(4))).replace('{tx}', String(claimSig.slice(0,8))), claimUrl);
       
       // 等待一下讓餘額更新
       await new Promise(resolve => setTimeout(resolve, 3000));
@@ -670,12 +672,12 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
         await connection.confirmTransaction(transferSig, 'confirmed');
         
         const transferUrl = `https://solscan.io/tx/${transferSig}`;
-        toast(`Poke 歸集成功 (tx: ${transferSig.slice(0,8)}...)`, 'success');
-        addLog(keypair.publicKey.toBase58(), `批量操作 - Poke 歸集成功 ${transferSig}`, transferUrl);
+        toast(t('poke_transfer_success').replace('{tx}', transferSig.slice(0,8)), 'success');
+        addLog(keypair.publicKey.toBase58(), t('poke_transfer_success').replace('{tx}', transferSig.slice(0,8)), transferUrl);
       } else {
         console.log('跳過轉帳：目標地址為自己');
         toast('跳過轉帳：目標地址為自己', 'info');
-        addLog(keypair.publicKey.toBase58(), '批量操作 - 跳過轉帳：目標地址為自己');
+        addLog(keypair.publicKey.toBase58(), t('skip_transfer').replace('{address}', transferTarget));
       }
       
       // 清空輸入
@@ -692,14 +694,14 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       refetchSol();
       refetchPoke();
       
-      toast('批量操作完成！', 'success');
-      addLog(keypair.publicKey.toBase58(), '批量操作完成');
+      toast(t('batch_operation_completed'), 'success');
+      addLog(keypair.publicKey.toBase58(), t('batch_operation_completed'));
       
     } catch (err: unknown) {
       const errorMessage = getPonzimonFriendlyError(err, err instanceof Error ? err.message : String(err));
       console.error('批量操作失敗:', errorMessage);
-      toast(`批量操作失敗: ${errorMessage}`, 'error');
-      addLog(keypair.publicKey.toBase58(), `批量操作失敗: ${errorMessage}`);
+      toast(t('batch_operation_failed').replace('{msg}', errorMessage), 'error');
+      addLog(keypair.publicKey.toBase58(), t('batch_operation_failed').replace('{msg}', errorMessage));
     } finally {
       setBatchClaimLoading(false);
     }
@@ -722,8 +724,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       const purchaseSig = await client.purchaseInitialFarm(keypair, new PublicKey(tokenMint), referrerWallet);
       console.log('農場購買成功:', purchaseSig);
       const purchaseUrl = `https://solscan.io/tx/${purchaseSig}`;
-      toast(`農場購買成功 (tx: ${purchaseSig.slice(0,8)}...)`, 'success');
-      addLog(keypair.publicKey.toBase58(), `自動初始化 - 農場購買成功 ${purchaseSig}`, purchaseUrl);
+      toast(t('farm_purchase_success').replace('{tx}', purchaseSig.slice(0,8)), 'success');
+      addLog(keypair.publicKey.toBase58(), t('farm_purchase_success').replace('{tx}', purchaseSig.slice(0,8)), purchaseUrl);
       
       // 等待交易確認並刷新資料
       await connection.confirmTransaction(purchaseSig, 'confirmed');
@@ -756,8 +758,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
         const stakeSig = await client.stakeCard(keypair, new PublicKey(tokenMint), i);
         console.log(`質押卡片 #${i} 成功:`, stakeSig);
         const stakeUrl = `https://solscan.io/tx/${stakeSig}`;
-        toast(`質押卡片 #${i} 成功 (tx: ${stakeSig.slice(0,8)}...)`, 'success');
-        addLog(keypair.publicKey.toBase58(), `自動初始化 - 質押卡片#${i} 成功 ${stakeSig}`, stakeUrl);
+        toast(t('stake_success').replace('{tx}', stakeSig.slice(0,8)), 'success');
+        addLog(keypair.publicKey.toBase58(), t('stake_success').replace('{tx}', stakeSig.slice(0,8)), stakeUrl);
         await connection.confirmTransaction(stakeSig, 'confirmed');
         // 等待一個 slot，避免冷卻未過
         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -768,8 +770,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       const recycleCommitSig = await client.recycleCardsCommit(keypair, new PublicKey(tokenMint), [2]);
       console.log('回收提交成功:', recycleCommitSig);
       const recycleCommitUrl = `https://solscan.io/tx/${recycleCommitSig}`;
-      toast(`回收提交成功 (tx: ${recycleCommitSig.slice(0,8)}...)`, 'success');
-      addLog(keypair.publicKey.toBase58(), `自動初始化 - 回收提交成功 ${recycleCommitSig}`, recycleCommitUrl);
+      toast(t('recycling_commit_success').replace('{tx}', recycleCommitSig.slice(0,8)), 'success');
+      addLog(keypair.publicKey.toBase58(), t('recycling_commit_success').replace('{tx}', recycleCommitSig.slice(0,8)), recycleCommitUrl);
       
       // 等待回收結算
       await connection.confirmTransaction(recycleCommitSig, 'confirmed');
@@ -780,8 +782,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       const recycleSettleSig = await client.recycleCardsSettle(keypair, new PublicKey(tokenMint));
       console.log('回收結算成功:', recycleSettleSig);
       const recycleSettleUrl = `https://solscan.io/tx/${recycleSettleSig}`;
-      toast(`回收結算成功 (tx: ${recycleSettleSig.slice(0,8)}...)`, 'success');
-      addLog(keypair.publicKey.toBase58(), `自動初始化 - 回收結算成功 ${recycleSettleSig}`, recycleSettleUrl);
+      toast(t('recycling_settlement_success').replace('{tx}', recycleSettleSig.slice(0,8)), 'success');
+      addLog(keypair.publicKey.toBase58(), t('recycling_settlement_success').replace('{tx}', recycleSettleSig.slice(0,8)), recycleSettleUrl);
       
       // 等待回收完成並刷新資料
       await connection.confirmTransaction(recycleSettleSig, 'confirmed');
@@ -806,8 +808,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
         const unstakeSig = await client.unstakeCard(keypair, new PublicKey(tokenMint), 1);
         console.log('解除質押卡片 #1 成功:', unstakeSig);
         const unstakeUrl = `https://solscan.io/tx/${unstakeSig}`;
-        toast(`解除質押卡片 #1 成功 (tx: ${unstakeSig.slice(0,8)}...)`, 'success');
-        addLog(keypair.publicKey.toBase58(), `自動初始化 - 解除質押卡片#1 成功 ${unstakeSig}`, unstakeUrl);
+        toast(t('unstake_success').replace('{tx}', unstakeSig.slice(0,8)), 'success');
+        addLog(keypair.publicKey.toBase58(), t('unstake_success').replace('{tx}', unstakeSig.slice(0,8)), unstakeUrl);
         
         await connection.confirmTransaction(unstakeSig, 'confirmed');
         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -824,21 +826,21 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
           const newStakeSig = await client.stakeCard(keypair, new PublicKey(tokenMint), bestCardIndex);
           console.log(`質押漿果消耗量最高卡片 #${bestCardIndex} 成功:`, newStakeSig);
           const newStakeUrl = `https://solscan.io/tx/${newStakeSig}`;
-          toast(`質押漿果消耗量最高卡片 #${bestCardIndex} 成功 (tx: ${newStakeSig.slice(0,8)}...)`, 'success');
-          addLog(keypair.publicKey.toBase58(), `自動初始化 - 質押漿果消耗量最高卡片#${bestCardIndex} 成功 ${newStakeSig}`, newStakeUrl);
+          toast(t('stake_success').replace('{tx}', newStakeSig.slice(0,8)), 'success');
+          addLog(keypair.publicKey.toBase58(), t('stake_success').replace('{tx}', newStakeSig.slice(0,8)), newStakeUrl);
           
           await connection.confirmTransaction(newStakeSig, 'confirmed');
         }
       } else {
         console.log('步驟4: 卡片數量不足，保持當前質押狀態');
         toast('卡片回收完成，但卡片數量不足', 'info');
-        addLog(keypair.publicKey.toBase58(), '自動初始化 - 卡片回收完成，但卡片數量不足');
+        addLog(keypair.publicKey.toBase58(), t('recycling_completed').replace('{count}', String(selectedCardsForRecycle.length)));
       }
       
       // 最終刷新
       refreshAccountQueries();
-      toast('自動初始化完成！', 'success');
-      addLog(keypair.publicKey.toBase58(), '自動初始化完成');
+      toast(t('auto_init_completed'), 'success');
+      addLog(keypair.publicKey.toBase58(), t('auto_init_completed'));
       
       // 清空 referrer 輸入
       setReferrerInput('');
@@ -846,8 +848,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     } catch (err: unknown) {
       const errorMessage = getPonzimonFriendlyError(err, err instanceof Error ? err.message : String(err));
       console.error('自動初始化失敗:', errorMessage);
-      toast(`自動初始化失敗: ${errorMessage}`, 'error');
-      addLog(keypair.publicKey.toBase58(), `自動初始化失敗: ${errorMessage}`);
+      toast(t('auto_init_failed').replace('{msg}', errorMessage), 'error');
+      addLog(keypair.publicKey.toBase58(), t('auto_init_failed').replace('{msg}', errorMessage));
     } finally {
       setAutoInitLoading(false);
     }
@@ -857,9 +859,9 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
   const handleExportSecret = async () => {
     try {
       await navigator.clipboard.writeText(account.secret);
-      toast('私鑰已複製到剪貼簿', 'success');
+      toast(t('secret_key_copied'), 'success');
     } catch {
-      toast('複製失敗，請手動複製', 'error');
+      toast(t('copy_failed'), 'error');
     }
   };
 
@@ -873,7 +875,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     setRefreshing(true);
     try {
       await refetch();
-      toast('帳號資料已刷新', 'success');
+      toast(t('account_refreshed'), 'success');
     } finally {
       setRefreshing(false);
     }
@@ -896,7 +898,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     // 取前 32 張
     const selected = unstakedCards.slice(0, 32).map(card => card.originalIndex);
     setSelectedCardsForRecycle(selected);
-    toast(`已自動選擇 ${selected.length} 張低星等未質押卡片（不含終極稀有）`, 'success');
+    toast(String(t('auto_select_low_rarity')).replace('{count}', String(selected.length)), 'success');
   };
 
   // 自動選擇低星等未質押卡片（最多8張）
@@ -912,7 +914,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     unstakedCards.sort((a, b) => a.rarity - b.rarity || a.id - b.id);
     const selected = unstakedCards.slice(0, 8).map(card => card.originalIndex);
     setSelectedCardsForRecycle(selected);
-    toast(`已自動選擇 ${selected.length} 張低星等未質押卡片（不含終極稀有）`, 'success');
+    toast(String(t('auto_select_low_rarity')).replace('{count}', String(selected.length)), 'success');
   };
 
   // 還原 handleUpgradeFarm 函數
@@ -924,14 +926,14 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
       const nextFarmLevel = playerData.farmLevel + 1;
       const sig = await client.upgradeFarm(keypair, new PublicKey(tokenMint), nextFarmLevel);
-      toast('農場升級成功!', 'success');
-      addLog(keypair.publicKey.toBase58(), `農場升級成功: ${sig}`);
+      toast(t('farm_upgrade_success').replace('{tx}', sig), 'success');
+      addLog(keypair.publicKey.toBase58(), t('farm_upgrade_success').replace('{tx}', sig));
       await new Promise(resolve => setTimeout(resolve, 1000));
       refreshAccountQueries();
     } catch (err: unknown) {
       const errorMessage = getPonzimonFriendlyError(err, err instanceof Error ? err.message : String(err));
-      toast(`升級農場失敗: ${errorMessage}`, 'error');
-      addLog(keypair.publicKey.toBase58(), `升級農場失敗: ${errorMessage}`);
+      toast(t('farm_upgrade_failure').replace('{msg}', errorMessage), 'error');
+      addLog(keypair.publicKey.toBase58(), t('farm_upgrade_failure').replace('{msg}', errorMessage));
     } finally {
       setUpgradeLoading(false);
     }
@@ -941,7 +943,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     <div className="relative bg-gray-800 rounded-lg shadow p-4 border border-gray-700">
       {(autoInitLoading || isInitializing) && (
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
-          <span className="text-white font-bold animate-pulse">初始化中...</span>
+          <span className="text-white font-bold animate-pulse">{t('initializing')}</span>
         </div>
       )}
       <div className="flex justify-between items-center mb-2 w-full">
@@ -949,10 +951,10 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
           <span className="font-mono text-xs text-gray-400 break-all max-w-[60%]">{pubkeyStr}</span>
           <button
             className="ml-1 p-1 rounded hover:bg-gray-700"
-            title="複製地址"
+            title={t('copy_address')}
             onClick={() => {
               navigator.clipboard.writeText(pubkeyStr);
-              toast('地址已複製', 'success');
+              toast(t('address_copied'), 'success');
             }}
             style={{ lineHeight: 1 }}
             disabled={autoInitLoading || isInitializing}
@@ -964,33 +966,31 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
           <button
             className="bg-yellow-500 hover:bg-yellow-600 text-xs text-white px-2 py-1 rounded"
             onClick={handleExportSecret}
-            title="匯出私鑰（複製到剪貼簿）"
+            title={t('export_secret_key')}
             style={{ minWidth: 60 }}
             disabled={autoInitLoading || isInitializing}
           >
-            🔑匯出
+            🔑{t('export')}
           </button>
           <button
             className="bg-green-600 hover:bg-green-700 text-xs text-white px-2 py-1 rounded font-bold"
             onClick={handleSingleRefresh}
             disabled={refreshing || autoInitLoading || isInitializing}
-            title="刷新此帳號資料"
+            title={t('refresh_this_account')}
             style={{ minWidth: 60 }}
           >
-            {refreshing ? '⏳' : '🔄 刷新'}
+            {refreshing ? '⏳' : `🔄 ${t('refresh')}`}
           </button>
           <button
             onClick={() => {
-              if (window.confirm('確定要刪除此錢包？此操作無法復原，且私鑰若未備份將永久遺失！\n\n同時會清除此錢包的所有日誌記錄。')) {
-                // 先清除該錢包的日誌
+              if (window.confirm(t('confirm_delete_wallet'))) {
                 clearLog(pubkeyStr);
-                // 再刪除錢包
                 removeAccount(account.secret);
-                toast('錢包已刪除，日誌已清除', 'success');
+                toast(t('wallet_deleted'), 'success');
               }
             }}
             className="bg-red-600 hover:bg-red-700 text-white text-xs px-2 py-1 rounded"
-            title="Delete wallet and clear logs"
+            title={t('delete_wallet')}
             style={{ minWidth: 32 }}
             disabled={autoInitLoading || isInitializing}
           >
@@ -1002,12 +1002,12 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       {/* 餘額顯示區塊（兩行，分開刷新） */}
       <div className="flex flex-col gap-1 mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-200">SOL：</span>
+          <span className="text-sm text-gray-200">{t('sol_balance')}:</span>
           <span className="font-mono text-base">{solLamports !== undefined && solLamports !== null ? (solLamports / LAMPORTS_PER_SOL).toFixed(4) : '0'}</span>
         </div>
         {tokenMint && (
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-200">Poke：</span>
+          <span className="text-sm text-gray-200">{t('poke_balance')}:</span>
           <span className="font-mono text-base">{pokeBalance !== undefined ? pokeBalance.toFixed(4) : '0'}</span>
         </div>
       )}
@@ -1015,21 +1015,21 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
 
       {/* 轉帳歸集功能 */}
       <div className="my-3 p-3 bg-gray-700 rounded-lg border border-gray-600">
-        <h4 className="text-sm font-semibold text-gray-300 mb-2">轉帳歸集</h4>
+        <h4 className="text-sm font-semibold text-gray-300 mb-2">{t('transfer_and_claim')}</h4>
         <div className="space-y-2">
           <div className="flex flex-col space-y-1">
-            <label className="text-xs text-gray-400">目標地址:</label>
+            <label className="text-xs text-gray-400">{t('target_address')}:</label>
             <input
               type="text"
               value={transferTarget}
               onChange={(e) => setTransferTarget(e.target.value)}
-              placeholder="輸入目標錢包地址..."
+              placeholder={t('enter_target_wallet')}
               className="px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
               disabled={autoInitLoading || isInitializing}
             />
           </div>
           <div className="flex flex-col space-y-1">
-            <label className="text-xs text-gray-400">金額（SOL 或 Poke）:</label>
+            <label className="text-xs text-gray-400">{t('amount_sol_or_poke')}:</label>
             <div className="flex gap-2 mb-1">
               <input
                 type="number"
@@ -1037,7 +1037,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                 step="0.0001"
                 value={transferAmount}
                 onChange={e => setTransferAmount(e.target.value)}
-                placeholder="預設全部"
+                placeholder={t('default_all')}
                 className="flex-1 px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                 disabled={autoInitLoading || isInitializing}
               />
@@ -1046,7 +1046,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                 type="button"
                 onClick={() => fillAmount('all')}
                 disabled={autoInitLoading || isInitializing}
-              >全部</button>
+              >{t('all')}</button>
               <button
                 className="px-2 py-1 text-xs bg-gray-600 hover:bg-gray-500 rounded text-white"
                 type="button"
@@ -1058,7 +1058,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                 type="button"
                 onClick={() => fillAmount('poke')}
                 disabled={!tokenMint || autoInitLoading || isInitializing}
-              >全部Poke</button>
+              >{t('all_poke')}</button>
             </div>
           </div>
           <div className="flex gap-2">
@@ -1070,7 +1070,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
               {transferLoading ? (
                 <span className="animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full mr-1"></span>
               ) : (
-                <span>轉 SOL</span>
+                <span>{t('transfer_sol')}</span>
               )}
             </button>
             <button
@@ -1081,7 +1081,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
               {transferLoading ? (
                 <span className="animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full mr-1"></span>
               ) : (
-                <span>轉 Poke</span>
+                <span>{t('transfer_poke')}</span>
               )}
             </button>
           </div>
@@ -1092,14 +1092,14 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
               className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-xs py-2 rounded font-medium flex items-center justify-center gap-2"
               onClick={handleBatchClaimAndTransfer}
               disabled={batchClaimLoading || !transferTarget.trim() || !tokenMint || autoInitLoading || isInitializing}
-              title="一鍵領取獎勵並歸集到目標地址（如果是自己則跳過轉帳）"
+              title={t('batch_claim_and_transfer')}
             >
               {batchClaimLoading ? (
                 <span className="animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full"></span>
               ) : (
                 <span>🚀</span>
               )}
-              {batchClaimLoading ? '批量操作中...' : '一鍵 Claim + 歸集 POKE'}
+              {batchClaimLoading ? t('batch_operation_in_progress') : t('batch_claim_and_transfer')}
             </button>
           </div>
         </div>
@@ -1110,7 +1110,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
           {playerData && (
             <>
               <p className="text-sm mb-1 flex items-center gap-2">
-                等級: {playerData.farmLevel}
+                {t('level')}: {playerData.farmLevel}
                 {/* 升級提示 */}
                 {(() => {
                   // FARM_CONFIGS 需與後端同步，這裡直接寫死
@@ -1131,7 +1131,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                   if (nextLevel >= FARM_CONFIGS.length) return null;
                   const nextCost = FARM_CONFIGS[nextLevel][2];
                   if (nextCost > 0 && pokeBalance >= nextCost) {
-                    return <span className="ml-2 px-2 py-0.5 rounded bg-amber-500 text-white font-bold animate-pulse">可升級！</span>;
+                    return <span className="ml-2 px-2 py-0.5 rounded bg-amber-500 text-white font-bold animate-pulse">{t('upgradable')}</span>;
                   }
                   return null;
                 })()}
@@ -1154,32 +1154,32 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                       ];
                       const nextLevel = playerData.farmLevel + 1;
                       if (nextLevel >= FARM_CONFIGS.length) {
-                        return '已達最高等級';
+                        return t('max_level_reached');
                       }
                       const nextCost = FARM_CONFIGS[nextLevel][2];
-                      return `升級到等級${nextLevel} 需要 ${nextCost} POKE`;
+                      return `${t('upgrade_to')} ${nextLevel} ${t('requires')} ${nextCost} ${t('poke')}`;
                     })()}
                   </span>
                 </span>
               </p>
               <p className="text-sm mb-1 flex items-center gap-2">
-                漿果: {playerData.berries.toLocaleString()} / {playerData.berryCapacity.toLocaleString()}
+                {t('berries')}: {playerData.berries.toLocaleString()} / {playerData.berryCapacity.toLocaleString()}
                 {/* 升級提示已移除 */}
               </p>
-              <p className="text-sm mb-1">卡片: {playerData.stakedCardCount}/{playerData.capacity}</p>
-              <p className="text-sm mb-1">算力: {playerData.totalHashpower}</p>
+              <p className="text-sm mb-1">{t('staked_cards')}: {playerData.stakedCardCount}/{playerData.capacity}</p>
+              <p className="text-sm mb-1">{t('hashpower')}: {playerData.totalHashpower}</p>
               {playerData.referrer && (
                 <div className="text-sm mb-2">
-                  <span className="text-gray-400">推薦人: </span>
+                  <span className="text-gray-400">{t('referrer_address')}: </span>
                   <span className="font-mono text-blue-400">
                     {playerData.referrer.slice(0, 8)}...{playerData.referrer.slice(-8)}
                   </span>
                   <button
                     className="ml-2 p-1 rounded hover:bg-gray-700"
-                    title="複製推薦人地址"
+                    title={t('copy_referrer_address')}
                     onClick={() => {
                       navigator.clipboard.writeText(playerData.referrer!);
-                      toast('推薦人地址已複製', 'success');
+                      toast(t('referrer_address_copied'), 'success');
                     }}
                     style={{ lineHeight: 1 }}
                   >
@@ -1203,7 +1203,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                   ) : (
                     <span>🎁</span>
                   )}
-                  {claimLoading ? '領取中...' : '領取獎勵'}
+                  {claimLoading ? t('claiming') : t('claim_rewards')}
                 </button>
                 <button
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold shadow hover:from-purple-600 hover:to-purple-700 disabled:opacity-60"
@@ -1216,8 +1216,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                     <span>⬆️</span>
                   )}
                   {playerData && playerData.farmLevel + 1 >= 11
-                    ? '已滿級'
-                    : (upgradeLoading ? '升級中...' : '升級農場')}
+                    ? t('max_level_reached')
+                    : (upgradeLoading ? t('upgrading') : t('upgrade_farm'))}
                 </button>
               </div>
               <div className="mb-2 flex justify-end gap-2">
@@ -1228,7 +1228,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                     disabled={recycleLoading || autoInitLoading || isInitializing}
                   >
                     <FaRecycle />
-                    選擇(32)
+                    {t('select_32')}
                   </button>
                   <button
                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-500 to-orange-400 text-white font-bold shadow hover:from-yellow-600 hover:to-orange-500 disabled:opacity-60"
@@ -1236,7 +1236,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                     disabled={recycleLoading || autoInitLoading || isInitializing}
                   >
                     <FaRecycle />
-                    選擇(8)
+                    {t('select_8')}
                   </button>
                 <button
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-bold shadow hover:from-red-600 hover:to-red-700 disabled:opacity-60"
@@ -1248,7 +1248,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                   ) : (
                     <span>♻️</span>
                   )}
-                  {recycleLoading ? '回收中...' : `回收卡片 (${selectedCardsForRecycle.length})`}
+                  {recycleLoading ? t('recycling') : t('recycle_cards').replace('{count}', String(selectedCardsForRecycle.length))}
                 </button>
               </div>
             </>
@@ -1260,7 +1260,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
               <div className="flex items-center justify-between mb-2 text-lg font-bold text-blue-500">
                 <div className="flex items-center">
                   <FaGem className="mr-1" />
-                  Cards <span className="ml-1 text-white text-base">({playerData.cards.length})</span>
+                  {t('cards')} <span className="ml-1 text-white text-base">({playerData.cards.length})</span>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -1273,7 +1273,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                     ) : (
                       <FaGift />
                     )}
-                    {boosterLoading ? '抽卡中...' : '抽卡'}
+                    {boosterLoading ? t('booster_in_progress') : t('booster')}
                   </button>
                 </div>
               </div>
@@ -1302,15 +1302,15 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                       const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
                       const sig = await client.stakeCard(keypair, new PublicKey(tokenMint), card.originalIndex);
                       const stakeUrl = `https://solscan.io/tx/${sig}`;
-                      toast(`質押成功 (tx: ${sig.slice(0,8)}...)`, 'success');
-                      addLog(keypair.publicKey.toBase58(), `質押卡片#${card.originalIndex} 成功 ${sig}`, stakeUrl);
+                      toast(t('stake_success').replace('{tx}', sig.slice(0,8)), 'success');
+                      addLog(keypair.publicKey.toBase58(), t('stake_success').replace('{tx}', sig.slice(0,8)), stakeUrl);
                       // 刷新
                       await new Promise(resolve => setTimeout(resolve, 1000));
                       refreshAccountQueries();
                     } catch (err: unknown) {
                       const errorMessage = getPonzimonFriendlyError(err, err instanceof Error ? err.message : String(err));
-                      toast(`質押失敗: ${errorMessage}`, 'error');
-                      addLog(keypair.publicKey.toBase58(), `質押卡片#${card.originalIndex} 失敗: ${errorMessage}`);
+                      toast(t('stake_failure').replace('{msg}', errorMessage), 'error');
+                      addLog(keypair.publicKey.toBase58(), t('stake_failure').replace('{msg}', errorMessage));
                       setOptimisticStaked((prev) => ({ ...prev, [card.originalIndex]: false }));
                     } finally {
                       setStakeLoading(null);
@@ -1326,15 +1326,15 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                       const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
                       const sig = await client.unstakeCard(keypair, new PublicKey(tokenMint), card.originalIndex);
                       const unstakeUrl = `https://solscan.io/tx/${sig}`;
-                      toast(`解除質押成功 (tx: ${sig.slice(0,8)}...)`, 'success');
-                      addLog(keypair.publicKey.toBase58(), `解除質押卡片#${card.originalIndex} 成功 ${sig}`, unstakeUrl);
+                      toast(t('unstake_success').replace('{tx}', sig.slice(0,8)), 'success');
+                      addLog(keypair.publicKey.toBase58(), t('unstake_success').replace('{tx}', sig.slice(0,8)), unstakeUrl);
                       // 刷新
                       await new Promise(resolve => setTimeout(resolve, 1000));
                       refreshAccountQueries();
                     } catch (err: unknown) {
                       const errorMessage = getPonzimonFriendlyError(err, err instanceof Error ? err.message : String(err));
-                      toast(`解除質押失敗: ${errorMessage}`, 'error');
-                      addLog(keypair.publicKey.toBase58(), `解除質押卡片#${card.originalIndex} 失敗: ${errorMessage}`);
+                      toast(t('unstake_failure').replace('{msg}', errorMessage), 'error');
+                      addLog(keypair.publicKey.toBase58(), t('unstake_failure').replace('{msg}', errorMessage));
                       setOptimisticStaked((prev) => ({ ...prev, [card.originalIndex]: true }));
                     } finally {
                       setUnstakeLoading(null);
@@ -1343,25 +1343,25 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                   return (
                     <div key={card.originalIndex} className="rounded-xl border-2 border-cyan-700 bg-gray-800 p-5 shadow-lg flex flex-col">
                       <div className="flex items-center justify-center text-lg font-bold text-cyan-300 mb-2">
-                        卡片 #{card.originalIndex} <FaBolt className="ml-1 text-yellow-400" />
+                        {t('card_number').replace('{n}', String(card.originalIndex))} <FaBolt className="ml-1 text-yellow-400" />
                       </div>
                       <div className="border-b border-gray-700 mb-3"></div>
                       <div className="text-base text-gray-300 grid grid-cols-2 gap-y-1 mb-3">
-                        <span className="font-medium text-gray-400">ID:</span>
+                        <span className="font-medium text-gray-400">{t('id')}:</span>
                         <span className="text-right font-bold text-gray-100">{card.id}</span>
-                        <span className="font-medium text-gray-400">稀有度:</span>
-                        <span className={`text-right font-bold flex items-center gap-1 ${rarityColor[card.rarity]}`}>{rarityText[card.rarity] || '未知'} {rarityIcon[card.rarity]}</span>
-                        <span className="font-medium text-gray-400">算力:</span>
+                        <span className="font-medium text-gray-400">{t('rarity')}:</span>
+                        <span className={`text-right font-bold flex items-center gap-1 ${rarityColor[card.rarity]}`}>{rarityText[card.rarity] || t('unknown')} {rarityIcon[card.rarity]}</span>
+                        <span className="font-medium text-gray-400">{t('hashpower')}:</span>
                         <span className="text-right font-bold text-gray-100">{card.hashpower}</span>
-                        <span className="font-medium text-gray-400">漿果:</span>
+                        <span className="font-medium text-gray-400">{t('berry_consumption')}:</span>
                         <span className="text-right font-bold text-gray-100">{card.berryConsumption}</span>
                       </div>
                       <div className={`flex items-center mb-3 px-2 py-1 rounded ${staked ? 'bg-emerald-900/60' : 'bg-gray-700'}`}> 
-                        <span className="mr-2 font-medium text-gray-400">狀態:</span>
+                        <span className="mr-2 font-medium text-gray-400">{t('status')}:</span>
                         {staked ? (
-                          <span className="flex items-center text-emerald-300 font-bold"><FaCheckSquare className="mr-1" />Staked</span>
+                          <span className="flex items-center text-emerald-300 font-bold"><FaCheckSquare className="mr-1" />{t('staked')}</span>
                         ) : (
-                          <span className="flex items-center text-gray-400 font-bold">none</span>
+                          <span className="flex items-center text-gray-400 font-bold">{t('none')}</span>
                         )}
                       </div>
                       <div className="flex flex-col gap-2 mt-auto">
@@ -1379,7 +1379,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                           ) : (
                             <FaLock className="mr-2" />
                           )}
-                          {staked ? '解除質押' : '質押'}
+                          {staked ? t('unstake') : t('stake')}
                         </button>
                         <button
                           className={`w-full py-2 rounded-lg font-bold flex items-center justify-center
@@ -1390,7 +1390,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                               : 'bg-gradient-to-r from-amber-700 to-orange-900 hover:from-amber-600 hover:to-orange-800 text-white'}
                           `}
                                                       disabled={staked || autoInitLoading || isInitializing}
-                          title={staked ? '已質押卡片不可回收' : selectedCardsForRecycle.includes(card.originalIndex) ? '取消選擇' : '選擇回收'}
+                          title={staked ? t('staked_card_cannot_recycle') : selectedCardsForRecycle.includes(card.originalIndex) ? t('cancel_selection') : t('select_for_recycle')}
                           onClick={() => {
                             if (!staked) {
                               toggleCardSelection(card.originalIndex);
@@ -1400,12 +1400,12 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                           {selectedCardsForRecycle.includes(card.originalIndex) ? (
                             <>
                               <FaCheck className="mr-2" />
-                              已選擇
+                              {t('selected')}
                             </>
                           ) : (
                             <>
                               <FaRecycle className="mr-2" />
-                              選擇回收
+                              {t('select_for_recycle')}
                             </>
                           )}
                         </button>
@@ -1424,12 +1424,12 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
           {(!playerData || playerData.capacity === 0) && (
             <div className="space-y-2">
               <div className="flex flex-col space-y-1">
-                <label className="text-xs text-gray-400">推薦人地址</label>
+                <label className="text-xs text-gray-400">{t('referrer_address')}</label>
                 <input
                   type="text"
                   value={referrerInput}
                   onChange={(e) => setReferrerInput(e.target.value)}
-                  placeholder="Enter referrer wallet address..."
+                  placeholder={t('enter_referrer_wallet')}
                   className="px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   disabled={autoInitLoading || isInitializing}
                 />
@@ -1443,27 +1443,27 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                   {purchaseLoading ? (
                     <>
                       <span className="animate-spin mr-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
-                      Purchasing...
+                      {t('purchasing')}
                     </>
                   ) : (
-                    'Purchase Farm'
+                    t('purchase_farm')
                   )}
                 </button>
                 <button 
                   onClick={handleAutoInit} 
                   disabled={autoInitLoading || isInitializing}
                   className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-green-800 disabled:to-emerald-800 text-sm py-2 rounded font-medium flex items-center justify-center"
-                  title="自動初始化：購買農場 → 質押前兩張卡 → 回收第三張卡 → 如果進化則替換質押"
+                  title={t('auto_init_tip')}
                 >
                   {autoInitLoading ? (
                     <>
                       <span className="animate-spin mr-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
-                      初始化中...
+                      {t('initializing')}
                     </>
                   ) : (
                     <>
                       <span className="mr-1">🚀</span>
-                      自動初始化
+                      {t('auto_init')}
                     </>
                   )}
                 </button>
@@ -1472,39 +1472,39 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
           )}
         </div>
       )}
-      <button onClick={()=>setLogOpen(true)} className="w-full bg-gray-700 hover:bg-gray-600 text-xs py-1 rounded my-2">Logs</button>
+      <button onClick={()=>setLogOpen(true)} className="w-full bg-gray-700 hover:bg-gray-600 text-xs py-1 rounded my-2">{t('logs')}</button>
 
       {tokenMint && (
-        <Modal open={logOpen} onClose={()=>setLogOpen(false)} title="Logs">
+        <Modal open={logOpen} onClose={()=>setLogOpen(false)} title={t('logs')}>
           <div className="flex flex-col h-full">
             {/* 工具欄 */}
             <div className="flex justify-between items-center mb-3 pb-2 border-b border-gray-600">
-              <span className="text-sm text-gray-300">日誌數量: {Array.isArray(logs) ? logs.length : 0}</span>
+              <span className="text-sm font-semibold text-gray-300 mb-2">{t('log_count').replace('{count}', String(Array.isArray(logs) ? logs.length : 0))}</span>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
-                    if (window.confirm('你確定要清除此錢包的日誌嗎？')) {
+                    if (window.confirm(t('confirm_clear_wallet_logs'))) {
                       clearLog(pubkeyStr);
-                      toast('日誌已清除', 'success');
+                      toast(t('logs_cleared'), 'success');
                     }
                   }}
                   className="px-3 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded"
                   disabled={!Array.isArray(logs) || logs.length === 0}
                 >
-                  清除日誌
+                  {t('clear_logs')}
                 </button>
                 <button
                   onClick={() => {
                     if (Array.isArray(logs)) {
                       const logText = logs.map(l => l.text).join('\n');
                       navigator.clipboard.writeText(logText);
-                      toast('日誌已複製到剪貼簿', 'success');
+                      toast(t('logs_copied'), 'success');
                     }
                   }}
                   className="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded"
                   disabled={!Array.isArray(logs) || logs.length === 0}
                 >
-                  複製日誌
+                  {t('copy_logs')}
                 </button>
               </div>
             </div>
@@ -1512,9 +1512,9 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
             {/* 日誌內容 */}
             <div className="text-xs max-h-96 overflow-auto space-y-1 font-mono flex-1">
               {!Array.isArray(logs) ? (
-                <div className="text-gray-500 text-center py-8">日誌數據格式錯誤</div>
+                <div className="text-gray-500 text-center py-8">{t('invalid_log_format')}</div>
               ) : logs.length === 0 ? (
-                <div className="text-gray-500 text-center py-8">無日誌</div>
+                <div className="text-gray-500 text-center py-8">{t('no_logs')}</div>
               ) : (
                 logs.map((l,i)=>(
                   <div key={i} className="flex gap-1 break-all">
