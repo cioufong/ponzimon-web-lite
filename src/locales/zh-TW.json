@@ -60,7 +60,6 @@
   "purchase_farm": "購買農場",
   "auto_init_tip": "自動初始化：購買農場 → 質押前兩張卡 → 回收第三張卡 → 如果進化則替換質押",
   "auto_init": "自動初始化",
-  "log_count": "日誌數量: {count}",
   "confirm_clear_wallet_logs": "你確定要清除此錢包的日誌嗎？",
   "logs_cleared": "日誌已清除",
   "clear_logs": "清除日誌",

@@ -60,7 +60,6 @@
   "purchase_farm": "购买农场",
   "auto_init_tip": "自动初始化：购买农场 → 质押前两张卡 → 回收第三张卡 → 如果进化则替换质押",
   "auto_init": "自动初始化",
-  "log_count": "日志数量: {count}",
   "confirm_clear_wallet_logs": "你确定要清除此钱包的日志吗？",
   "logs_cleared": "日志已清除",
   "clear_logs": "清除日志",

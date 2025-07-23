@@ -60,7 +60,6 @@
   "purchase_farm": "Purchase Farm",
   "auto_init_tip": "Auto init: Purchase farm → Stake first two cards → Recycle third card → Replace stake if evolved",
   "auto_init": "Auto Init",
-  "log_count": "Log count: {count}",
   "confirm_clear_wallet_logs": "Are you sure you want to clear logs for this wallet?",
   "logs_cleared": "Logs cleared",
   "clear_logs": "Clear logs",
