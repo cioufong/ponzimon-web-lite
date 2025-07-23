@@ -320,37 +320,67 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-8 bg-gray-900 text-white">
       <div className="w-full max-w-7xl mx-auto">
         <header className="mb-8 flex flex-col items-start justify-between">
-                      <div className="w-full flex items-center justify-between">
-              <div className="flex items-center gap-4">
-          <h1 className="text-4xl font-bold">Ponzimon Dashboard</h1>
+          <div className="w-full flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h1 className="text-4xl font-bold">Ponzimon Dashboard</h1>
                 <RpcStatus />
-              </div>
-          <div className="flex gap-2">
-            <button
-                  onClick={handleGlobalRefresh}
-              className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md"
-                  disabled={false}
-                  title="全部帳號資料重整/刷新"
-                >
-                  🔄 全部刷新
-                </button>
-                <button
-                  onClick={() => setLogsModalOpen(true)}
-                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md"
-                  disabled={false}
-                  title="查看所有錢包日誌"
-                >
-                  📋 日誌管理
-                </button>
-            <button
-              onClick={() => setRpcOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
-                  disabled={false}
-            >
-              RPC
-            </button>
-              </div>
             </div>
+            <div className="flex gap-2">
+              <button
+                    onClick={handleGlobalRefresh}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md"
+                    disabled={false}
+                    title="全部帳號資料重整/刷新"
+                  >
+                    🔄 全部刷新
+                  </button>
+                  <button
+                    onClick={() => setLogsModalOpen(true)}
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md"
+                    disabled={false}
+                    title="查看所有錢包日誌"
+                  >
+                    📋 日誌管理
+                  </button>
+              <button
+                onClick={() => setRpcOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
+                    disabled={false}
+              >
+                RPC
+              </button>
+              </div>
+          </div>
+          <div className="mt-3 mb-2 px-4 py-2 bg-amber-100/10 border border-amber-300/30 rounded text-amber-200 text-sm max-w-2xl">
+            <span className="font-bold">安全性說明：</span>私鑰僅保存在本地瀏覽器，不會上傳伺服器或第三方。請妥善備份，勿洩漏給他人。
+            <div className="mt-2 flex gap-4 items-center justify-end w-full">
+              <a
+                href="https://github.com/cioufong/ponzimon-web-lite"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-blue-300 hover:text-blue-400 underline"
+                title="前往 GitHub"
+              >
+                <svg width="18" height="18" fill="currentColor" className="inline-block" viewBox="0 0 24 24">
+                  <path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.78 2.73 1.27 3.4.97.11-.75.41-1.27.74-1.56-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 2.9-.39c.98 0 1.97.13 2.9.39 2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.41-5.27 5.7.42.36.79 1.09.79 2.2 0 1.59-.01 2.87-.01 3.26 0 .31.21.68.8.56C20.71 21.39 24 17.08 24 12c0-6.27-5.23-11.5-12-11.5z"/>
+                </svg>
+                GitHub
+              </a>
+              <a
+                href="https://x.com/0xTisane"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-neutral-300 hover:text-black underline"
+                title="前往 X"
+              >
+                {/* X (Twitter) 標誌 */}
+                <svg width="18" height="18" fill="currentColor" className="inline-block" viewBox="0 0 24 24">
+                  <path d="M17.53 3H21.5l-7.06 8.06L22.5 21h-7.5l-5.2-6.18L3.5 21H-.5l7.67-8.76L1.5 3h7.5l4.7 5.58L17.53 3zm-2.13 15h2.13l-5.98-7.1-1.5 1.72L15.4 18zm-8.93 0h2.13l2.1-2.4-2.1-2.42-2.13 2.42 2.1 2.4zm1.5-13H5.87l5.98 7.1 1.5-1.72L8.1 5zm8.93 0h-2.13l-2.1 2.4 2.1 2.42 2.13-2.42-2.1-2.4z"/>
+                </svg>
+                X
+              </a>
+            </div>
+          </div>
           {/* 單錢包操作與錢包設定區塊（保留） */}
           <div className="w-full flex flex-wrap gap-2 mt-4 items-center bg-gray-800 border border-gray-600 p-4 rounded-lg">
             {/* 新增錢包按鈕 */}

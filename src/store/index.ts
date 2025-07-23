@@ -43,7 +43,7 @@ const defaultRateLimit = {
 }
 
 // programId 與 tokenMint - mainnet
-// export const PROGRAM_ID = '7n6Qittj5bzxH9a9G6JemNRgqfNpyWaJFvFKWGGaKn6r';
+// export const PROGRAM_ID = 'pms897jTNbFiyoUSbRN9VQ5EhtBKh7p9nWuBDQecFSA';
 // export const TOKEN_MINT = 'mPtPbojNDpmpySrLUWmfiVZmSxSUCXhPQuREu3DZ1hM';
 // devnet
 // export const PROGRAM_ID = 'pvbX31Yg4c5tapUPmcrMAMEM85G4QmUjHxdv9Kuct61';
