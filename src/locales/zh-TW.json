@@ -180,5 +180,6 @@
   "auto_stake_in_progress": "自動質押中...",
   "auto_stake_completed": "自動質押完成：{stake} 張質押, {unstake} 張解除",
   "already_optimal_stake": "已經是最優質押組合，無需再優化",
-  "auto_stake_failed": "自動質押失敗: {msg}"
+  "auto_stake_failed": "自動質押失敗: {msg}",
+  "farm_upgrade_failure": "農場升級失敗: {msg}"
 }

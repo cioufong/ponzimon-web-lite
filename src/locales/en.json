@@ -161,6 +161,7 @@
   "new_wallet_added": "New wallet added: {name}",
   "booster_commit_success": "Booster request sent (tx: {tx})",
   "farm_upgrade_success": "Farm upgrade success (tx: {tx})",
+  "farm_upgrade_failure": "Farm upgrade failed: {msg}",
   "rpc_status_ok": "OK",
   "rpc_status_busy": "Busy",
   "rpc_status_crowded": "Crowded",
