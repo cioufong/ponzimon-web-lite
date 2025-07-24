@@ -437,7 +437,7 @@ function Home() {
                 </div>
                 <div className="flex items-center gap-2 bg-gray-700 border border-yellow-500 p-2 rounded my-1">
                   <span className="text-xs text-yellow-300">{t('booster_cost')}：</span>
-                  <span className="font-mono text-base text-yellow-200">{boosterCost !== null ? `${boosterCost} IZNOP` : t('loading')}</span>
+                  <span className="font-mono text-base text-yellow-200">{boosterCost !== null ? `${boosterCost} PONZI` : t('loading')}</span>
                   {claimTimeRemaining && (
                     <span className="text-xs text-yellow-400 font-medium animate-pulse ml-auto">
                       {claimTimeRemaining}
