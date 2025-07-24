@@ -377,6 +377,18 @@ function Home() {
             <span className="font-bold">{t('security_note')}</span>{t('security_detail')}
             <div className="mt-2 flex gap-4 items-center justify-end w-full">
               <a
+                href="https://www.ponzimon.com?referral=4Qhw3wgchX2CtH9ZjfCWfxynbgN7Ee86BAenKwKrhg5Z"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-blue-300 hover:text-blue-400 underline"
+                title={t('ponzimon_website')}
+              >
+                <svg width="18" height="18" fill="currentColor" className="inline-block" viewBox="0 0 24 24">
+                  <path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.78 2.73 1.27 3.4.97.11-.75.41-1.27.74-1.56-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 2.9-.39c.98 0 1.97.13 2.9.39 2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.41-5.27 5.7.42.36.79 1.09.79 2.2 0 1.59-.01 2.87-.01 3.26 0 .31.21.68.8.56C20.71 21.39 24 17.08 24 12c0-6.27-5.23-11.5-12-11.5z"/>
+                </svg>
+                {t('ponzimon_website')}
+              </a>
+              <a
                 href="https://github.com/cioufong/ponzimon-web-lite"
                 target="_blank"
                 rel="noopener noreferrer"
