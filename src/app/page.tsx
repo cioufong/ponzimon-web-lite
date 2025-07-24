@@ -125,7 +125,7 @@ function Home() {
       // 沒有自動刷新時，只顯示靜態時間（如果有緩存的 globalState）
       setClaimTimeRemaining('');
     }
-  }, [config.rpcEndpoint, refreshInterval]);
+  }, [config.programId, config.rpcEndpoint, config.tokenMint, refreshInterval]);
 
   // 全域自動刷新
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -285,7 +285,7 @@ function Home() {
       toast(t('all_accounts_refresh_failed'), 'error');
       setRefreshing(false);
     }
-  }, [accounts, config.rpcEndpoint, queryClient, toast, t]);
+  }, [accounts, config.tokenMint, config.rpcEndpoint, config.programId, toast, t, queryClient]);
 
   // 初始載入時執行一次批量查詢
   useEffect(() => {

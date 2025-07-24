@@ -23,7 +23,6 @@ import { FaRecycle } from 'react-icons/fa';
 import { FaGift } from 'react-icons/fa';
 import { FaCheck } from 'react-icons/fa';
 import { getPonzimonFriendlyError } from '@/lib/utils/errors';
-import { PROGRAM_ID } from '@/store';
 import { useI18n } from '../lib/useI18n';
 
 interface Props {
@@ -76,7 +75,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       
       // 如果有 token mint，则查询 Poke 余额和玩家数据
       if (tokenMint) {
-        const pid = PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address);
+        const pid = config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address);
         const [pda] = PublicKey.findProgramAddressSync([
           Buffer.from('player'),
           keypair.publicKey.toBuffer(),
@@ -151,7 +150,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     if (!tokenMint) return;
     setPurchaseLoading(true);
     const connection = new Connection(config.rpcEndpoint, 'confirmed');
-    const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+    const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
 
     // 使用 referrerInput（若合法），否則 fallback 用 DEFAULT_REFERRER
     let referrerWallet: PublicKey | undefined;
@@ -184,7 +183,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     if (!tokenMint) return;
     setClaimLoading(true);
     const connection = new Connection(config.rpcEndpoint, 'confirmed');
-    const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+    const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
     try {
       const sig = await client.claimRewards(keypair, new PublicKey(tokenMint));
       // 確認交易並解析實際領取數量
@@ -308,7 +307,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     try {
       if (!tokenMint || !playerData) throw new Error('tokenMint or playerData is undefined');
       const connection = new Connection(config.rpcEndpoint, 'confirmed');
-      const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+      const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
       
       // 先嘗試結算任何待處理的抽卡請求
       try {
@@ -336,7 +335,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       console.log('檢查是否還有待處理的請求...');
       
       // 取得 fees_wallet ATA
-      const programIdPK = PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address);
+      const programIdPK = config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address);
       const tokenMintPK = new PublicKey(tokenMint);
       const feesWallet = await PonzimonClient.getFeesWallet(connection, programIdPK, tokenMintPK);
       const feesTokenAta = await getAssociatedTokenAddress(tokenMintPK, feesWallet);
@@ -408,7 +407,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
         try {
           toast('偵測到待處理請求，正在自動重置...','info');
           const connection = new Connection(config.rpcEndpoint, 'confirmed');
-          const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+          const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
           if (!tokenMint) throw new Error('tokenMint is required');
           await client.cancelPendingAction(keypair, new PublicKey(tokenMint));
           await new Promise(resolve => setTimeout(resolve, 5000));
@@ -436,7 +435,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     
     try {
       const connection = new Connection(config.rpcEndpoint, 'confirmed');
-      const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+      const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
       
       // 先自動結算待處理的隨機請求（抽卡或回收）
       if (playerData && playerData.pendingAction && typeof playerData.pendingAction === 'object') {
@@ -527,7 +526,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
         try {
           toast('偵測到待處理請求，正在自動重置...','info');
           const connection = new Connection(config.rpcEndpoint, 'confirmed');
-          const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+          const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
           if (!tokenMint) throw new Error('tokenMint is required');
           await client.cancelPendingAction(keypair, new PublicKey(tokenMint));
           await new Promise(resolve => setTimeout(resolve, 5000));
@@ -579,7 +578,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     setTransferLoading(true);
     try {
       const connection = new Connection(config.rpcEndpoint, 'confirmed');
-      const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+      const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
       const amount = parseFloat(transferAmount) || undefined;
       const sig = await client.transferSOL(keypair, new PublicKey(transferTarget.trim()), amount);
       await connection.confirmTransaction(sig, 'confirmed');
@@ -603,7 +602,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     setTransferLoading(true);
     try {
       const connection = new Connection(config.rpcEndpoint, 'confirmed');
-      const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+      const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
       const amount = parseFloat(transferAmount) || undefined;
       const sig = await client.transferPoke(keypair, new PublicKey(transferTarget.trim()), new PublicKey(tokenMint), amount);
       await connection.confirmTransaction(sig, 'confirmed');
@@ -632,7 +631,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     setBatchClaimLoading(true);
     try {
       const connection = new Connection(config.rpcEndpoint, 'confirmed');
-      const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+      const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
       const targetAddress = new PublicKey(transferTarget.trim());
       
       // 檢查是否轉給自己
@@ -714,7 +713,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     setAutoInitLoading(true);
     try {
       const connection = new Connection(config.rpcEndpoint, 'confirmed');
-      const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+      const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
       // 使用 referrerInput（若合法），否則 fallback 用 DEFAULT_REFERRER
       let referrerWallet: PublicKey | undefined;
       try {
@@ -737,7 +736,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
       await new Promise(resolve => setTimeout(resolve, 2000)); // 等待 2 秒確保 slot 更新
       
       // 重新獲取玩家資料
-      const pid = PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address);
+      const pid = config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address);
       const [pda] = PublicKey.findProgramAddressSync([
         Buffer.from('player'),
         keypair.publicKey.toBuffer(),
@@ -924,7 +923,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     setUpgradeLoading(true);
     try {
       const connection = new Connection(config.rpcEndpoint, 'confirmed');
-      const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+      const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
       const nextFarmLevel = playerData.farmLevel + 1;
       const sig = await client.upgradeFarm(keypair, new PublicKey(tokenMint), nextFarmLevel);
       toast(t('farm_upgrade_success').replace('{tx}', sig), 'success');
@@ -946,7 +945,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     setAutoStakeLoading(true);
     try {
       const connection = new Connection(config.rpcEndpoint, 'confirmed');
-      const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+      const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
       // 清空選擇的卡片
       setSelectedCardsForRecycle([]);
       // 1. 計算所有卡片效率
@@ -1400,7 +1399,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                     setOptimisticTimestamp((prev) => ({ ...prev, [card.originalIndex]: Date.now() }));
                     try {
                       const connection = new Connection(config.rpcEndpoint, 'confirmed');
-                      const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+                      const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
                       const sig = await client.stakeCard(keypair, new PublicKey(tokenMint), card.originalIndex);
                       const stakeUrl = `https://solscan.io/tx/${sig}`;
                       toast(t('stake_success').replace('{tx}', sig.slice(0,8)), 'success');
@@ -1424,7 +1423,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                     setOptimisticTimestamp((prev) => ({ ...prev, [card.originalIndex]: Date.now() }));
                     try {
                       const connection = new Connection(config.rpcEndpoint, 'confirmed');
-                      const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+                      const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
                       const sig = await client.unstakeCard(keypair, new PublicKey(tokenMint), card.originalIndex);
                       const unstakeUrl = `https://solscan.io/tx/${sig}`;
                       toast(t('unstake_success').replace('{tx}', sig.slice(0,8)), 'success');
@@ -1524,17 +1523,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
         <div className="space-y-2 mt-2">
           {(!playerData || playerData.capacity === 0) && (
             <div className="space-y-2">
-              <div className="flex flex-col space-y-1">
-                <label className="text-xs text-gray-400">{t('referrer_address')}</label>
-                <input
-                  type="text"
-                  value={referrerInput}
-                  onChange={(e) => setReferrerInput(e.target.value)}
-                  placeholder={t('enter_referrer_wallet')}
-                  className="px-2 py-1 text-xs bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-                  disabled={autoInitLoading || isInitializing}
-                />
-              </div>
+              
               <div className="flex gap-2">
                 <button 
                                   onClick={handlePurchaseFarm} 
