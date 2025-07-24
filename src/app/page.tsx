@@ -40,7 +40,7 @@ function Home() {
   const [claimTimeRemaining, setClaimTimeRemaining] = useState<string>(''); // 新增
   useEffect(() => {
     const fetchBoosterCost = async () => {
-      if (!config.tokenMint) {
+      if (!config.rpcEndpoint || !config.tokenMint) {
         setBoosterCost(null);
         setFarmInitCost(null);
         return;
@@ -62,7 +62,7 @@ function Home() {
 
   // 計算 claim 開放時間倒數
   useEffect(() => {
-    if (!config.tokenMint) return;
+    if (!config.rpcEndpoint || !config.tokenMint) return;
     
     const fetchGlobalState = async () => {
       try {
