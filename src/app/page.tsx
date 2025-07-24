@@ -18,7 +18,6 @@ import { parsePlayerBuffer } from '@/lib/utils/player';
 import { useQueryClient } from '@tanstack/react-query';
 import { getAssociatedTokenAddress } from '@solana/spl-token';
 import type { GlobalState } from '@/lib/types';
-import { PROGRAM_ID, TOKEN_MINT } from '@/store';
 import { I18nProvider, useI18n, Locale } from '../lib/I18nProvider';
 
 function Home() {
@@ -41,37 +40,35 @@ function Home() {
   const [claimTimeRemaining, setClaimTimeRemaining] = useState<string>(''); // 新增
   useEffect(() => {
     const fetchBoosterCost = async () => {
-      if (!TOKEN_MINT) {
+      if (!config.tokenMint) {
         setBoosterCost(null);
-        setFarmInitCost(null); // 新增
+        setFarmInitCost(null);
         return;
       }
       try {
         const connection = new (await import('@solana/web3.js')).Connection(config.rpcEndpoint, 'confirmed');
-        const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
-        if (!TOKEN_MINT) throw new Error('tokenMint is required');
-        const globalState = await client.getGlobalState(new PublicKey(TOKEN_MINT));
+        const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
+        const globalState = await client.getGlobalState(new PublicKey(config.tokenMint));
         setBoosterCost(Number(globalState.booster_pack_cost_microtokens) / 1_000_000);
-        setFarmInitCost(Number(globalState.initial_farm_purchase_fee_lamports) / 1_000_000_000); // 新增
+        setFarmInitCost(Number(globalState.initial_farm_purchase_fee_lamports) / 1_000_000_000);
       } catch (e) {
         toast(`讀取抽卡價格失敗: ${e}`, 'error');
         setBoosterCost(null);
-        setFarmInitCost(null); // 新增
+        setFarmInitCost(null);
       }
     };
     fetchBoosterCost();
-  }, [config.rpcEndpoint, refreshInterval, toast]);
+  }, [config.rpcEndpoint, config.programId, config.tokenMint, refreshInterval, toast]);
 
   // 計算 claim 開放時間倒數
   useEffect(() => {
-    if (!TOKEN_MINT) return;
+    if (!config.tokenMint) return;
     
     const fetchGlobalState = async () => {
       try {
         const connection = new (await import('@solana/web3.js')).Connection(config.rpcEndpoint, 'confirmed');
-        const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
-        if (!TOKEN_MINT) throw new Error('tokenMint is required');
-        return await client.getGlobalState(new PublicKey(TOKEN_MINT));
+        const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
+        return await client.getGlobalState(new PublicKey(config.tokenMint));
       } catch {
         return null;
       }
@@ -171,10 +168,10 @@ function Home() {
           id += 1;
           
           // 如果有 token mint，则查询 Poke 余额和玩家数据
-          if (TOKEN_MINT) {
-            const tokenMintPubkey = new PublicKey(TOKEN_MINT);
+          if (config.tokenMint) {
+            const tokenMintPubkey = new PublicKey(config.tokenMint);
             ata = (await getAssociatedTokenAddress(tokenMintPubkey, pubkey)).toBase58();
-            const pid = PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address);
+            const pid = config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address);
             const [playerPda] = PublicKey.findProgramAddressSync([
               Buffer.from('player'),
               pubkey.toBuffer(),
@@ -220,7 +217,7 @@ function Home() {
           let playerData = null;
           
           // 如果有 token mint，解析 Poke 余额和玩家数据
-          if (TOKEN_MINT && ids.poke > 0 && ids.player > 0) {
+          if (config.tokenMint && ids.poke > 0 && ids.player > 0) {
             const pokeResult = results.find((r: unknown) => (r as { id: number }).id === ids.poke) as { result?: { value?: { uiAmount: number } } } | undefined;
             pokeBalance = pokeResult?.result?.value?.uiAmount ?? 0;
             
@@ -231,7 +228,7 @@ function Home() {
             }
           }
           // 統一 key 生成
-          const tokenMintKey = TOKEN_MINT ? TOKEN_MINT : 'none';
+          const tokenMintKey = config.tokenMint ? config.tokenMint : 'none';
           queryClient.setQueryData([
             'accountBatch',
             pubkeyStr,
@@ -248,11 +245,11 @@ function Home() {
       }
       
       // 在全部刷新時也更新 start slot 倒數計時
-      if (TOKEN_MINT) {
+      if (config.tokenMint) {
         try {
           const connection = new (await import('@solana/web3.js')).Connection(config.rpcEndpoint, 'confirmed');
-          const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
-          const globalState = await client.getGlobalState(new PublicKey(TOKEN_MINT));
+          const client = new PonzimonClient(connection, config.programId ? new PublicKey(config.programId) : new PublicKey(IDL.address));
+          const globalState = await client.getGlobalState(new PublicKey(config.tokenMint));
           
           if (globalState && globalState.start_slot) {
             const currentSlot = Date.now() / 400;
@@ -429,7 +426,7 @@ function Home() {
               </button>
             </div>
             {/* 抽卡價格顯示區塊 */}
-            {TOKEN_MINT && (
+            {config.tokenMint && (
               <>
                 <div className="flex items-center gap-2 bg-gray-700 border border-green-500 p-2 rounded my-1">
                   <span className="text-xs text-green-300">{t('farm_init_cost')}：</span>
@@ -464,7 +461,7 @@ function Home() {
                 <PlayerCard
                   key={acc.secret}
                   account={acc}
-                  tokenMint={TOKEN_MINT}
+                  tokenMint={config.tokenMint}
                   isInitializing={false}
                 />
               );
