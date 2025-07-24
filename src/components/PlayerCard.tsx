@@ -263,6 +263,7 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
   const [optimisticStaked, setOptimisticStaked] = useState<Record<number, boolean>>({});
   const [optimisticTimestamp, setOptimisticTimestamp] = useState<Record<number, number>>({});
   const [refreshing, setRefreshing] = useState(false);
+  const [autoStakeLoading, setAutoStakeLoading] = useState(false);
 
   // 刷新該帳號所有相關查詢，並立即 refetch
   const refreshAccountQueries = () => {
@@ -939,6 +940,94 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
     }
   };
 
+  // 自動質押功能（自動優化組合，含自動取消質押）
+  const handleAutoStake = async () => {
+    if (!tokenMint || !playerData) return;
+    setAutoStakeLoading(true);
+    try {
+      const connection = new Connection(config.rpcEndpoint, 'confirmed');
+      const client = new PonzimonClient(connection, PROGRAM_ID ? new PublicKey(PROGRAM_ID) : new PublicKey(IDL.address));
+      // 清空選擇的卡片
+      setSelectedCardsForRecycle([]);
+      // 1. 計算所有卡片效率
+      const allCards = playerData.cards.map((card, idx) => ({
+        ...card,
+        originalIndex: idx,
+        efficiency: card.hashpower / card.berryConsumption,
+        staked: optimisticStaked[idx] !== undefined ? optimisticStaked[idx] : isCardStaked(idx, playerData.stakedCardsBitset)
+      }));
+      // 2. 按效率排序
+      const sorted = allCards.slice().sort((a, b) => b.efficiency - a.efficiency);
+      // 3. 選出最佳組合
+      let berryUsed = 0;
+      const bestCombo = [];
+      for (const card of sorted) {
+        if (bestCombo.length >= playerData.capacity) break;
+        if (berryUsed + card.berryConsumption <= playerData.berryCapacity) {
+          bestCombo.push(card);
+          berryUsed += card.berryConsumption;
+        }
+      }
+      const bestIndices = new Set(bestCombo.map(c => c.originalIndex));
+      const currentlyStaked = allCards.filter(c => c.staked).map(c => c.originalIndex);
+      // 需要取消質押的卡片
+      const toUnstake = currentlyStaked.filter(idx => !bestIndices.has(idx));
+      // 需要新質押的卡片
+      const toStake = bestCombo.filter(c => !c.staked).map(c => c.originalIndex);
+      // 4. 依序執行（每次操作間延遲 1 秒）
+      let successStake = 0, successUnstake = 0;
+      for (const idx of toUnstake) {
+        try {
+          setOptimisticStaked((prev) => ({ ...prev, [idx]: false }));
+          setOptimisticTimestamp((prev) => ({ ...prev, [idx]: Date.now() }));
+          const sig = await client.unstakeCard(keypair, new PublicKey(tokenMint), idx);
+          successUnstake++;
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          toast(t('unstake_success').replace('{tx}', sig.slice(0,8)), 'success');
+          addLog(keypair.publicKey.toBase58(), t('unstake_success').replace('{tx}', sig.slice(0,8)));
+        } catch (err) {
+          const errorMessage = getPonzimonFriendlyError(err, err instanceof Error ? err.message : String(err));
+          toast(t('unstake_failure').replace('{msg}', errorMessage), 'error');
+          addLog(keypair.publicKey.toBase58(), t('unstake_failure').replace('{msg}', errorMessage));
+        }
+      }
+      // 解除質押完成後，等待 1 秒再開始質押，確保冷卻時間足夠
+      if (toUnstake.length > 0 && toStake.length > 0) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      for (const idx of toStake) {
+        try {
+          setOptimisticStaked((prev) => ({ ...prev, [idx]: true }));
+          setOptimisticTimestamp((prev) => ({ ...prev, [idx]: Date.now() }));
+          const sig = await client.stakeCard(keypair, new PublicKey(tokenMint), idx);
+          successStake++;
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          toast(t('stake_success').replace('{tx}', sig.slice(0,8)), 'success');
+          addLog(keypair.publicKey.toBase58(), t('stake_success').replace('{tx}', sig.slice(0,8)));
+        } catch (err) {
+          const errorMessage = getPonzimonFriendlyError(err, err instanceof Error ? err.message : String(err));
+          toast(t('stake_failure').replace('{msg}', errorMessage), 'error');
+          addLog(keypair.publicKey.toBase58(), t('stake_failure').replace('{msg}', errorMessage));
+        }
+      }
+      if (successStake + successUnstake > 0) {
+        toast(t('auto_stake_completed').replace('{stake}', String(successStake)).replace('{unstake}', String(successUnstake)), 'success');
+        addLog(keypair.publicKey.toBase58(), t('auto_stake_completed').replace('{stake}', String(successStake)).replace('{unstake}', String(successUnstake)));
+      } else {
+        toast(t('already_optimal_stake'), 'info');
+        addLog(keypair.publicKey.toBase58(), t('already_optimal_stake'));
+      }
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      refreshAccountQueries();
+    } catch (err) {
+      const errorMessage = getPonzimonFriendlyError(err, err instanceof Error ? err.message : String(err));
+      toast(t('auto_stake_failed').replace('{msg}', errorMessage), 'error');
+      addLog(keypair.publicKey.toBase58(), t('auto_stake_failed').replace('{msg}', errorMessage));
+    } finally {
+      setAutoStakeLoading(false);
+    }
+  };
+
   return (
     <div className="relative bg-gray-800 rounded-lg shadow p-4 border border-gray-700">
       {(autoInitLoading || isInitializing) && (
@@ -1263,6 +1352,18 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
                   {t('cards')} <span className="ml-1 text-white text-base">({playerData.cards.length})</span>
                 </div>
                 <div className="flex gap-2">
+                  <button
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold shadow hover:from-emerald-600 hover:to-emerald-700 disabled:opacity-60"
+                    onClick={handleAutoStake}
+                    disabled={autoStakeLoading || autoInitLoading || isInitializing}
+                  >
+                    {autoStakeLoading ? (
+                      <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+                    ) : (
+                      <FaLock />
+                    )}
+                    {autoStakeLoading ? t('auto_stake_in_progress') : t('auto_stake')}
+                  </button>
                   <button
                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-yellow-400 text-white font-bold shadow hover:from-pink-600 hover:to-yellow-500 disabled:opacity-60"
                     onClick={handleOpenBooster}

@@ -175,5 +175,10 @@
   "all_logs_cleared": "所有日志已清除",
   "copy_all_logs": "复制所有日志",
   "all_logs_copied": "所有日志已复制到剪贴板",
-  "more_logs": "... 还有 {count} 条日志"
+  "more_logs": "... 还有 {count} 条日志",
+  "auto_stake": "自动质押",
+  "auto_stake_in_progress": "自动质押中...",
+  "auto_stake_completed": "自动质押完成：{stake} 张质押, {unstake} 张解除",
+  "already_optimal_stake": "已经是最优质押组合，无需再优化",
+  "auto_stake_failed": "自动质押失败: {msg}"
 }

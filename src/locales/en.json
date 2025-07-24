@@ -175,5 +175,10 @@
   "all_logs_cleared": "All logs cleared",
   "copy_all_logs": "Copy All Logs",
   "all_logs_copied": "All logs copied to clipboard",
-  "more_logs": "... {count} more logs"
+  "more_logs": "... {count} more logs",
+  "auto_stake": "Auto Stake",
+  "auto_stake_in_progress": "Auto staking...",
+  "auto_stake_completed": "Auto stake completed: {stake} staked, {unstake} unstaked",
+  "already_optimal_stake": "Already optimal stake, no need to optimize",
+  "auto_stake_failed": "Auto stake failed: {msg}"
 }
