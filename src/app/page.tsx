@@ -21,6 +21,7 @@ import type { GlobalState } from '@/lib/types';
 import { I18nProvider, useI18n, Locale } from '../lib/I18nProvider';
 
 function Home() {
+  // 1. 所有 hooks 無條件呼叫
   const { accounts, config, addAccount, refreshInterval } = useAppStore();
   const [rpcOpen, setRpcOpen] = useState(false);
   const [addingWallet, setAddingWallet] = useState(false);
@@ -33,7 +34,6 @@ function Home() {
   const queryClient = useQueryClient();
   const { locale, setLocale, t } = useI18n();
   const [refreshing, setRefreshing] = useState(false);
-
   // 顯示抽卡價格
   const [boosterCost, setBoosterCost] = useState<number | null>(null);
   const [farmInitCost, setFarmInitCost] = useState<number | null>(null);
@@ -586,6 +586,17 @@ function Home() {
 }
 
 export default function HomePageWrapper() {
+  // hydration loading: 只在 rpcEndpoint 載入後才 render
+  const { config } = useAppStore();
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    if (config.rpcEndpoint && config.rpcEndpoint !== 'https://api.devnet.solana.com') {
+      setHydrated(true);
+    }
+  }, [config.rpcEndpoint]);
+  if (!hydrated) {
+    return <div style={{color:'#fff',padding:'2rem',textAlign:'center'}}>Loading...</div>;
+  }
   return (
     <I18nProvider>
       <Home />
