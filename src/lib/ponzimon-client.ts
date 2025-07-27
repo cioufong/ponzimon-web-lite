@@ -232,14 +232,64 @@ export class PonzimonClient {
 
   /* --------------------------- Public Actions --------------------------- */
 
-  async claimRewards(playerKeypair: Keypair, tokenMint: PublicKey) {
-    const ix = await this.buildClaimRewardsIx(playerKeypair.publicKey, tokenMint)
-
-    const tx = new Transaction().add(
-      ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 }),
-      ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1_000 }),
-      ix
+  private async ensureTokenAccountExists(playerWallet: PublicKey, tokenMint: PublicKey): Promise<TransactionInstruction | null> {
+    const playerTokenAta = await getAssociatedTokenAddress(tokenMint, playerWallet)
+    const accountInfo = await this.connection.getAccountInfo(playerTokenAta)
+    
+    if (accountInfo) {
+      return null // Account already exists
+    }
+    
+    // Create the associated token account
+    return createAssociatedTokenAccountInstruction(
+      playerWallet,
+      playerTokenAta,
+      playerWallet,
+      tokenMint
     )
+  }
+
+  // Alternative method: Create token account separately
+  async createTokenAccount(playerKeypair: Keypair, tokenMint: PublicKey): Promise<string> {
+    const playerTokenAta = await getAssociatedTokenAddress(tokenMint, playerKeypair.publicKey)
+    const accountInfo = await this.connection.getAccountInfo(playerTokenAta)
+    
+    if (accountInfo) {
+      throw new Error('Token account already exists')
+    }
+    
+    const createAtaIx = createAssociatedTokenAccountInstruction(
+      playerKeypair.publicKey,
+      playerTokenAta,
+      playerKeypair.publicKey,
+      tokenMint
+    )
+    
+    const tx = new Transaction().add(createAtaIx)
+    const sig = await this.connection.sendTransaction(tx, [playerKeypair])
+    return sig
+  }
+
+  async claimRewards(playerKeypair: Keypair, tokenMint: PublicKey) {
+    // First, ensure the token account exists
+    const createAtaIx = await this.ensureTokenAccountExists(playerKeypair.publicKey, tokenMint)
+    const claimIx = await this.buildClaimRewardsIx(playerKeypair.publicKey, tokenMint)
+
+    const tx = new Transaction()
+    
+    // Add compute budget instructions
+    tx.add(
+      ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 }),
+      ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1_000 })
+    )
+    
+    // Add create ATA instruction if needed
+    if (createAtaIx) {
+      tx.add(createAtaIx)
+    }
+    
+    // Add claim rewards instruction
+    tx.add(claimIx)
 
     const sig = await this.connection.sendTransaction(tx, [playerKeypair])
     return sig
@@ -259,15 +309,33 @@ export class PonzimonClient {
   }
 
   async stakeCard(playerKeypair: Keypair, tokenMint: PublicKey, cardIndex: number) {
-    const ix = await this.buildStakeCardIx(playerKeypair.publicKey, tokenMint, cardIndex)
-    const tx = new Transaction().add(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }), ix)
+    const createAtaIx = await this.ensureTokenAccountExists(playerKeypair.publicKey, tokenMint)
+    const stakeIx = await this.buildStakeCardIx(playerKeypair.publicKey, tokenMint, cardIndex)
+    
+    const tx = new Transaction()
+    tx.add(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }))
+    
+    if (createAtaIx) {
+      tx.add(createAtaIx)
+    }
+    
+    tx.add(stakeIx)
     const sig = await this.connection.sendTransaction(tx, [playerKeypair])
     return sig
   }
 
   async unstakeCard(playerKeypair: Keypair, tokenMint: PublicKey, cardIndex: number) {
-    const ix = await this.buildUnstakeCardIx(playerKeypair.publicKey, tokenMint, cardIndex)
-    const tx = new Transaction().add(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }), ix)
+    const createAtaIx = await this.ensureTokenAccountExists(playerKeypair.publicKey, tokenMint)
+    const unstakeIx = await this.buildUnstakeCardIx(playerKeypair.publicKey, tokenMint, cardIndex)
+    
+    const tx = new Transaction()
+    tx.add(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }))
+    
+    if (createAtaIx) {
+      tx.add(createAtaIx)
+    }
+    
+    tx.add(unstakeIx)
     const sig = await this.connection.sendTransaction(tx, [playerKeypair])
     return sig
   }
@@ -292,19 +360,36 @@ export class PonzimonClient {
   }
 
   async settleOpenBooster(playerKeypair: Keypair, tokenMint: PublicKey) {
-    const ix = await this.buildSettleOpenBoosterIx(playerKeypair.publicKey, tokenMint)
-    const tx = new Transaction().add(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }), ix)
+    const createAtaIx = await this.ensureTokenAccountExists(playerKeypair.publicKey, tokenMint)
+    const settleIx = await this.buildSettleOpenBoosterIx(playerKeypair.publicKey, tokenMint)
+    
+    const tx = new Transaction()
+    tx.add(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }))
+    
+    if (createAtaIx) {
+      tx.add(createAtaIx)
+    }
+    
+    tx.add(settleIx)
     const sig = await this.connection.sendTransaction(tx, [playerKeypair])
     return sig
   }
 
   async upgradeFarm(playerKeypair: Keypair, tokenMint: PublicKey, farmType: number) {
-    const ix = await this.buildUpgradeFarmIx(playerKeypair.publicKey, tokenMint, farmType)
-    const tx = new Transaction().add(
+    const createAtaIx = await this.ensureTokenAccountExists(playerKeypair.publicKey, tokenMint)
+    const upgradeIx = await this.buildUpgradeFarmIx(playerKeypair.publicKey, tokenMint, farmType)
+    
+    const tx = new Transaction()
+    tx.add(
       ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 }),
-      ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1_000 }),
-      ix
+      ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1_000 })
     )
+    
+    if (createAtaIx) {
+      tx.add(createAtaIx)
+    }
+    
+    tx.add(upgradeIx)
     const sig = await this.connection.sendTransaction(tx, [playerKeypair])
     return sig
   }
@@ -367,12 +452,20 @@ export class PonzimonClient {
   }
 
   async recycleCardsSettle(playerKeypair: Keypair, tokenMint: PublicKey) {
-    const ix = await this.buildRecycleCardsSettleIx(playerKeypair.publicKey, tokenMint)
-    const tx = new Transaction().add(
+    const createAtaIx = await this.ensureTokenAccountExists(playerKeypair.publicKey, tokenMint)
+    const settleIx = await this.buildRecycleCardsSettleIx(playerKeypair.publicKey, tokenMint)
+    
+    const tx = new Transaction()
+    tx.add(
       ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 }),
-      ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1_000 }),
-      ix
+      ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1_000 })
     )
+    
+    if (createAtaIx) {
+      tx.add(createAtaIx)
+    }
+    
+    tx.add(settleIx)
     const sig = await this.connection.sendTransaction(tx, [playerKeypair])
     return sig
   }
