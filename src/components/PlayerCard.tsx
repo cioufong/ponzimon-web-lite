@@ -199,8 +199,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
           const preAmt = Number(pre.uiTokenAmount.amount) / Math.pow(10, decimals);
           const postAmt = Number(post.uiTokenAmount.amount) / Math.pow(10, decimals);
           const difference = postAmt - preAmt;
-          // 使用絕對值，避免負號但保留實際數量
-          claimedAmount = Math.abs(Number(difference.toFixed(decimals)));
+          // 使用絕對值，避免負號，並正確格式化為 4 位小數
+          claimedAmount = Math.abs(Number(difference.toFixed(4)));
         }
       }
 
@@ -653,8 +653,8 @@ const PlayerCard = ({ account, tokenMint, isInitializing = false }: Props) => {
           const preAmt = Number(pre.uiTokenAmount.amount) / Math.pow(10, decimals);
           const postAmt = Number(post.uiTokenAmount.amount) / Math.pow(10, decimals);
           const difference = postAmt - preAmt;
-          // 確保結果為正數，避免負號問題
-          claimedAmount = Math.abs(Number(difference.toFixed(decimals)));
+          // 確保結果為正數，避免負號問題，並正確格式化為 4 位小數
+          claimedAmount = Math.abs(Number(difference.toFixed(4)));
         }
       }
       
